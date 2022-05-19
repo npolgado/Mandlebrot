@@ -158,7 +158,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     from matplotlib.patches import Polygon
 
-    theta = np.arange(0, 2*np.pi, 0.1)
+    theta = np.arange(0, 2*np.pi, 0.5*np.pi)
     r = 1.5
 
     xs = r * np.cos(theta)

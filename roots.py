@@ -1,11 +1,37 @@
 '''FINIDNG ROOTS
 '''
+import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
 SIZE = 1024         # size of canvas
 DELTA = 1e-10       # when to stop calculating root
-  
+
+
+def plot_complex(roots, coeff):
+    '''
+    plot_complex: using the roots and coefficients of the polynomial, 
+    plot the roots using matplotlib
+
+    :param roots: array of polynomial roots
+    :param coeff: array of polynomial coefficients in decending order (highest degree first!)
+
+    :return: matplotlib plot of roots from polynomial with labels
+    '''
+    # extract real part
+    x = [np.real(ele) for ele in roots]
+    # extract imaginary part
+    y = [np.imag(ele) for ele in roots]
+    
+    # plot the complex numbers
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    c = ax.scatter(x, y)
+    plt.ylabel('Imaginary')
+    plt.xlabel('Real')
+    plt.grid(True)
+    plt.show()
+
 class POLY:
     def __init__(self, coefficients, lowerB=-10, upperB=10, n=30):
         assert(len(coefficients) >= 1)
@@ -100,6 +126,7 @@ if __name__ == "__main__":
             f = POLY(args)
             print("found polynomial {}".format(f.get_name()))
             print("roots = {}".format(f.roots))
+            plot_complex(f.roots, f.coefficients)
         except:
             print("couldn't find roots...")
     else:
