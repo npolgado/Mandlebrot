@@ -15,7 +15,6 @@ HEIGHT = 720
 # default poly
 curr_poly = r.POLY([5, 4, 3, 2, 1, 10], n=50)
 
-# 
 
 # Color mapping
 

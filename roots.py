@@ -50,7 +50,7 @@ class POLY():
             'root': []
         }
 
-        self.painter = p.Painter()
+        # self.painter = p.Painter()
 
         self.lowerB = lowerB
         self.upperB = upperB
@@ -99,7 +99,7 @@ class POLY():
                             
                             if isIn == False:
                                 roots.append(next_guess)                                            # add to return if new root
-                                self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))    # painter  
+                                # self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))    # painter  
                             break
                 
                 # DO CALC IF NOT FOUND
@@ -123,7 +123,7 @@ class POLY():
                                 
                                 if isIn == False:
                                     roots.append(next_guess)                                    # add to return if new root
-                                    self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))   # painter  
+                                    # self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))   # painter  
                                 break
                         guess = next_guess
         return roots
