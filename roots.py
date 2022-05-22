@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import painter as p
+import time
 
 SIZE = 1024         # size of canvas
 DELTA = 1e-10       # when to stop calculating root
@@ -17,7 +18,20 @@ To increased compute speed, consider DP dictionary lookup
   recalculating poly, and changing the oo func
 '''
 
-def plot_complex(roots, coeff):
+def print_bar(progress, total):
+    '''
+    print_bar: uses total and progress to determine progress in percentage
+
+    :param progress: current progress (less than total)
+    :param total: total amount of iterations
+
+    :return: None (plots graph)
+    '''
+    percent = 100 * (progress / float(total))
+    bar = '*' * int(percent) + '-' * (100-int(percent))
+    print(f"\r|{bar}| {percent:.2f}%", end='\r')
+
+def plot_complex(roots, coeff): #TODO: make this plot the axis for more details
     '''
     plot_complex: using the roots and coefficients of the polynomial, 
     plot the roots using matplotlib
@@ -27,10 +41,8 @@ def plot_complex(roots, coeff):
 
     :return: matplotlib plot of roots from polynomial with labels
     '''
-    # extract real part
-    x = [np.real(ele) for ele in roots]
-    # extract imaginary part
-    y = [np.imag(ele) for ele in roots]
+    x = [np.real(ele) for ele in roots]  # extract real part
+    y = [np.imag(ele) for ele in roots]  # extract imaginary part
     
     # plot the complex numbers
     fig = plt.figure()
@@ -42,7 +54,7 @@ def plot_complex(roots, coeff):
     plt.show()
 
 class POLY():
-    def __init__(self, coefficients, lowerB=-10, upperB=10, n=30):
+    def __init__(self, coefficients, lowerB=-10, upperB=10, n=20):
         assert(len(coefficients) >= 1)
 
         self.calculated = { #DP to make compute faster
@@ -57,10 +69,19 @@ class POLY():
         self.n = n
         self.coefficients = coefficients
         self.derivative = np.polyder(self.coefficients, 1)
+        start_t = time.time()         
         self.roots = self.calc_roots(lowerB, upperB, n)
+        end_t = time.time() 
+        print(f"loaded function in {float(end_t - start_t)} seconds...\n")
 
     def adjust(self, new_coeff):
         assert(len(new_coeff) >= 1)
+
+        self.calculated = { #RESET DP, no need for previous data
+            'guess' : [],
+            'root': []
+        }
+
         self.coefficients = new_coeff
         self.derivative = np.polyder(self.coefficients, 1)
         self.roots = self.calc_roots(self.lowerB, self.upperB, self.n)
@@ -85,45 +106,47 @@ class POLY():
                 alreadyFound = False
 
                 # PRE CHECK FOR ANSWER
-                for i, known in enumerate(self.calculated.get('guess')):                        # check if guess if in dict
-                    if abs(guess - known) < DELTA:                                              # known root already calculated
+                for known in self.calculated.get('guess'):                                                          # check if guess if in dict
+                    if abs(guess - known) < DELTA:                                                                  # known root already calculated
                         alreadyFound = True
 
                         if len(roots) < 1:
-                            roots.append(next_guess)  
+                            roots.append(next_guess)
+                            #self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))               # painter  
                         else:
                             isIn = False
-                            for m, root in enumerate(roots):                                        # add to known if not already found
+                            for m, root in enumerate(roots):                                                        # add to known if not already found
                                 if abs(guess - root) < DELTA:
                                     isIn = True
                             
                             if isIn == False:
-                                roots.append(next_guess)                                            # add to return if new root
-                                # self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))    # painter  
+                                roots.append(next_guess)                                                            # add to return if new root
+                                #self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))           # painter  
                             break
                 
                 # DO CALC IF NOT FOUND
                 if alreadyFound == False:
-                    original_guess = guess                                                      # record original for lookup
+                    original_guess = guess                                                                          # record original for lookup
 
                     for n in range(maxIter):
                         next_guess = guess - (self.eval(guess) / self.eval_derivative(guess))
 
-                        if abs(next_guess - guess) < DELTA:                                     # found new ans
-                            self.calculated['guess'].append(original_guess)                     # regardless, add found root and guess to dict
+                        if abs(next_guess - guess) < DELTA:                                                         # found new ans
+                            self.calculated['guess'].append(original_guess)                                         # regardless, add found root and guess to dict
                             self.calculated['root'].append(next_guess) 
 
                             if len(roots) < 1:
                                 roots.append(next_guess)
+                                #self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))           # painter  
                             else:
                                 isIn = False
-                                for m, root in enumerate(roots):                                # add to known if not already found
+                                for m, root in enumerate(roots):                                                    # add to known if not already found
                                     if abs(next_guess - root) < DELTA:
                                         isIn = True
                                 
                                 if isIn == False:
-                                    roots.append(next_guess)                                    # add to return if new root
-                                    # self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))   # painter  
+                                    roots.append(next_guess)                                                        # add to return if new root
+                                    # self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))      # painter  
                                 break
                         guess = next_guess
         return roots
@@ -180,7 +203,27 @@ if __name__ == "__main__":
         #has args
         args = [int(x) for x in sys.argv[1:]]
         print("finding roots to polynomial {}...".format(args))
-        f = POLY(args)
+        
+        try:
+            f = POLY(args)
+        except:
+            print("ERROR loading polynomial...")
+
+        try:
+            print(f"{f.get_name()}\t")
+        except:
+            print("ERROR printing polynomial name...")
+
+        try:
+            print(f"{np.reshape(f.roots, (len(f.roots), 1))}")
+        except:
+            print("ERROR printing roots...")
+
+        try:
+            plot_complex(f.roots, f.coefficients)
+        except:
+            print("ERROR printing roots...")
+
         # parent = super(f.__class__, f)
         # print(f"{parent.calculated}")
     else:
