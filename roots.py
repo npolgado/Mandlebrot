@@ -7,6 +7,14 @@ import sys
 SIZE = 1024         # size of canvas
 DELTA = 1e-10       # when to stop calculating root
 
+'''
+QUICK NOTES:
+
+To increased compute speed, consider DP dictionary lookup
+
+- how do we handle changing the roots,
+  recalculating poly, and changing the oo func
+'''
 
 def plot_complex(roots, coeff):
     '''
@@ -35,9 +43,18 @@ def plot_complex(roots, coeff):
 class POLY:
     def __init__(self, coefficients, lowerB=-10, upperB=10, n=30):
         assert(len(coefficients) >= 1)
+        self.lowerB = lowerB
+        self.upperB = upperB
+        self.n = n
         self.coefficients = coefficients
         self.derivative = np.polyder(self.coefficients, 1)
         self.roots = self.calc_roots(lowerB, upperB, n)
+
+    def adjust(self, new_coeff):
+        assert(len(new_coeff) >= 1)
+        self.coefficients = new_coeff
+        self.derivative = np.polyder(self.coefficients, 1)
+        self.roots = self.calc_roots(self.lowerB, self.upperB, self.n)
 
     def calc_roots(self, lowerB, upperB, N):
         '''
