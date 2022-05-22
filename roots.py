@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import painter as p
 
 SIZE = 1024         # size of canvas
 DELTA = 1e-10       # when to stop calculating root
@@ -40,9 +41,17 @@ def plot_complex(roots, coeff):
     plt.grid(True)
     plt.show()
 
-class POLY:
+class POLY():
     def __init__(self, coefficients, lowerB=-10, upperB=10, n=30):
         assert(len(coefficients) >= 1)
+
+        self.calculated = { #DP to make compute faster
+            'guess' : [],
+            'root': []
+        }
+
+        self.painter = p.Painter()
+
         self.lowerB = lowerB
         self.upperB = upperB
         self.n = n
@@ -73,18 +82,50 @@ class POLY:
         for r in sampleR:
             for i in sampleI:
                 guess = r + i*1j
-                for n in range(maxIter):
-                    next_guess = guess - (self.eval(guess) / self.eval_derivative(guess))
-                    if abs(next_guess - guess) < DELTA:
-                        is_in = False
-                        for root in roots:
-                            if abs(next_guess - root) < DELTA:
-                                is_in = True
+                alreadyFound = False
+
+                # PRE CHECK FOR ANSWER
+                for i, known in enumerate(self.calculated.get('guess')):                        # check if guess if in dict
+                    if abs(guess - known) < DELTA:                                              # known root already calculated
+                        alreadyFound = True
+
+                        if len(roots) < 1:
+                            roots.append(next_guess)  
+                        else:
+                            isIn = False
+                            for m, root in enumerate(roots):                                        # add to known if not already found
+                                if abs(guess - root) < DELTA:
+                                    isIn = True
+                            
+                            if isIn == False:
+                                roots.append(next_guess)                                            # add to return if new root
+                                self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))    # painter  
+                            break
+                
+                # DO CALC IF NOT FOUND
+                if alreadyFound == False:
+                    original_guess = guess                                                      # record original for lookup
+
+                    for n in range(maxIter):
+                        next_guess = guess - (self.eval(guess) / self.eval_derivative(guess))
+
+                        if abs(next_guess - guess) < DELTA:                                     # found new ans
+                            self.calculated['guess'].append(original_guess)                     # regardless, add found root and guess to dict
+                            self.calculated['root'].append(next_guess) 
+
+                            if len(roots) < 1:
+                                roots.append(next_guess)
+                            else:
+                                isIn = False
+                                for m, root in enumerate(roots):                                # add to known if not already found
+                                    if abs(next_guess - root) < DELTA:
+                                        isIn = True
+                                
+                                if isIn == False:
+                                    roots.append(next_guess)                                    # add to return if new root
+                                    self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))   # painter  
                                 break
-                        if not is_in:
-                            roots.append(next_guess)
-                        break
-                    guess = next_guess
+                        guess = next_guess
         return roots
 
     def eval(self, x):
@@ -139,12 +180,8 @@ if __name__ == "__main__":
         #has args
         args = [int(x) for x in sys.argv[1:]]
         print("finding roots to polynomial {}...".format(args))
-        try:
-            f = POLY(args)
-            print("found polynomial {}".format(f.get_name()))
-            print("roots = {}".format(f.roots))
-            plot_complex(f.roots, f.coefficients)
-        except:
-            print("couldn't find roots...")
+        f = POLY(args)
+        # parent = super(f.__class__, f)
+        # print(f"{parent.calculated}")
     else:
         pass
