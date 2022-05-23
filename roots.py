@@ -50,6 +50,40 @@ def plot_complex(roots, coeff): #TODO: make this plot the axis for more details
     plt.grid(True)
     plt.show()
 
+def find_all_roots(fr, WIDTH, HEIGHT):
+    for x in range(0, WIDTH):
+        for y in range(0, HEIGHT):
+            root = fr.which_root(x,y)
+            fr.painter.draw_pixel(x, y)               # painter
+            # print(f"x={x} y={y} has the root= {fr.which_root(x,y)}")
+
+class FRACTAL(): #use this as the dictionary, input must be a poly
+    def __init__(self, poly):
+        self.poly = poly        
+        self.dict = self.poly.calculated
+        self.painter = p.Painter()
+
+    def which_root(self, x, y):
+        '''
+        which_root: uses lookup table from polynomial to find all the values on the canvas
+
+        :param x: real component, or x coordinate
+        :param y: imaginary component, or y coordinate
+        :return: the root which this initial guess calculates
+        '''
+        guess = x + y*1j
+
+        for i, known_guess in enumerate(self.dict['guess']):    # check table
+
+            if abs(guess - known_guess) < DELTA:
+                return self.dict['root'][i]                     # if calculated already: return root
+        
+        for n in range(1000):                                   # if not in table: do calc
+            next_guess = guess - (self.poly.eval(guess) / self.poly.eval_derivative(guess))
+            if abs(next_guess - guess) < DELTA:                 # found new ans
+                return next_guess
+            guess = next_guess
+
 class POLY():
     def __init__(self, coefficients, lowerB=-10, upperB=10, n=20):
         assert(len(coefficients) >= 1)
@@ -59,8 +93,6 @@ class POLY():
             'root': []
         }
 
-        # self.painter = p.Painter()
-
         self.lowerB = lowerB
         self.upperB = upperB
         self.n = n
@@ -69,7 +101,7 @@ class POLY():
         start_t = time.time()         
         self.roots = self.calc_roots(lowerB, upperB, n)
         end_t = time.time() 
-        # print(f"loaded function in {float(end_t - start_t)} seconds...\n")
+        self.time_efficiency = float(end_t - start_t)
 
     def adjust(self, new_coeff):
         assert(len(new_coeff) >= 1)
@@ -109,7 +141,6 @@ class POLY():
 
                         if len(roots) < 1:
                             roots.append(next_guess)
-                            #self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))               # painter  
                         else:
                             isIn = False
                             for m, root in enumerate(roots):                                                        # add to known if not already found
@@ -118,7 +149,6 @@ class POLY():
                             
                             if isIn == False:
                                 roots.append(next_guess)                                                            # add to return if new root
-                                #self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))           # painter  
                             break
                 
                 # DO CALC IF NOT FOUND
@@ -133,8 +163,7 @@ class POLY():
                             self.calculated['root'].append(next_guess) 
 
                             if len(roots) < 1:
-                                roots.append(next_guess)
-                                #self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))           # painter  
+                                roots.append(next_guess) 
                             else:
                                 isIn = False
                                 for m, root in enumerate(roots):                                                    # add to known if not already found
@@ -143,7 +172,6 @@ class POLY():
                                 
                                 if isIn == False:
                                     roots.append(next_guess)                                                        # add to return if new root
-                                    # self.painter.draw_pixel(np.real(original_guess), np.imag(original_guess))      # painter  
                                 break
                         guess = next_guess
         return roots
@@ -216,12 +244,21 @@ if __name__ == "__main__":
         except:
             print("ERROR printing roots...")
 
-        try:
-            plot_complex(f.roots, f.coefficients)
-        except:
-            print("ERROR printing roots...")
+        # try:
+        #     plot_complex(f.roots, f.coefficients)
+        # except:
+        #     print("ERROR printing roots...")
 
-        # parent = super(f.__class__, f)
-        # print(f"{parent.calculated}")
+        try:
+            fr = FRACTAL(f)
+            print(f"found root: {fr.which_root(1,1)}")
+        except:
+            print("couldn't find which root that is...")
+
+        try:
+            find_all_roots(fr, 1000, 1000)
+            print("found all roots!!")
+        except:
+            print("error with all roots")
     else:
         pass

@@ -31,8 +31,8 @@ def plot_runtimes(x, y):
     plt.show()
 
 if __name__ == "__main__":
-    max_degrees = 40
-    max_samples = 5
+    max_degrees = 25
+    max_samples = 3
 
     total = max_degrees * max_samples
     count = 0
@@ -43,15 +43,10 @@ if __name__ == "__main__":
         times = [] # array to hold each sample's time
         for curr_sample in range(0, max_samples): # Go through all samples 
             coeff = [int(np.random.uniform(-100, 100)) for y in range(0, curr_degree)]
-
-            start_t = time.time()
             poly = r.POLY(coeff)
-            end_t = time.time()
-
             count += 1
             print_bar(count, total)
-
-            times.append(float(end_t - start_t))
+            times.append(poly.time_efficiency)
         means.append(np.average(times))
     plot_runtimes(np.linspace(2, max_degrees+2, max_degrees), means)
     print(means)

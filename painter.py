@@ -1,5 +1,4 @@
 import pygame, time, random, os
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 class Painter:
     def __init__(self):
