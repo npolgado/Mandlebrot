@@ -2,17 +2,14 @@
 '''
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 import painter as p
-import time
+import time, sys
 
 SIZE = 1024         # size of canvas
 DELTA = 1e-10       # when to stop calculating root
 
 '''
 QUICK NOTES:
-
-To increased compute speed, consider DP dictionary lookup
 
 - how do we handle changing the roots,
   recalculating poly, and changing the oo func
@@ -72,7 +69,7 @@ class POLY():
         start_t = time.time()         
         self.roots = self.calc_roots(lowerB, upperB, n)
         end_t = time.time() 
-        print(f"loaded function in {float(end_t - start_t)} seconds...\n")
+        # print(f"loaded function in {float(end_t - start_t)} seconds...\n")
 
     def adjust(self, new_coeff):
         assert(len(new_coeff) >= 1)

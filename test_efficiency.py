@@ -17,17 +17,22 @@ def print_bar(progress, total):
     print(f"\r|{bar}| {percent:.2f}%", end='\r')
 
 def plot_runtimes(x, y):
-    fig = plt.figure()
-    ax = fig.add_subplot()
-    c = ax.scatter(x, y) # plot the complex numbers
-    plt.ylabel('time (seconds)')
-    plt.xlabel('maximum degree')
+    fig, ax = plt.subplots()
+    ax.plot(x, y)
+    ax.grid(True, which='both')
+    ax.axhline(y=0, color='k')
+    ax.axvline(x=0, color='k')
+    plt.xlim(1, max_degrees+3)
+
+    plt.ylabel('Time (seconds)')
+    plt.xlabel('Maximum Degree')
+    plt.title('Polynomial Length vs Time to Compute')
     plt.grid(True)
     plt.show()
 
 if __name__ == "__main__":
-    max_degrees = 30
-    max_samples = 32
+    max_degrees = 40
+    max_samples = 5
 
     total = max_degrees * max_samples
     count = 0
