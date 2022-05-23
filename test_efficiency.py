@@ -1,4 +1,5 @@
-import time, sys
+import time
+import matplotlib.pyplot as plt
 import numpy as np
 import roots as r
 
@@ -15,26 +16,37 @@ def print_bar(progress, total):
     bar = '*' * int(percent) + '-' * (100-int(percent))
     print(f"\r|{bar}| {percent:.2f}%", end='\r')
 
+def plot_runtimes(x, y):
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    c = ax.scatter(x, y) # plot the complex numbers
+    plt.ylabel('time (seconds)')
+    plt.xlabel('maximum degree')
+    plt.grid(True)
+    plt.show()
+
 if __name__ == "__main__":
-    max_degrees = 20
-    max_samples = 10
+    max_degrees = 30
+    max_samples = 32
 
     total = max_degrees * max_samples
     count = 0
-    # print_bar(count, total)
+    print_bar(count, total)
 
     means = []
-    for x in range(0, max_degrees):
-        times = []
+    for curr_degree in range(2, max_degrees+2): # Go through every possible degree
+        times = [] # array to hold each sample's time
+        for curr_sample in range(0, max_samples): # Go through all samples 
+            coeff = [int(np.random.uniform(-100, 100)) for y in range(0, curr_degree)]
 
-        for i in range(0, x):
-            for j in range(0, max_samples):
-                coeff = [int(np.random.uniform(-100, 100)) for x in range(0, max_degrees)]
-                start_t = time.time()
-                poly = r.POLY(coeff)
-                end_t = time.time()
-                times.append(float(end_t - start_t))
-        
-        means.append(float(sum(times) / len(times)))
+            start_t = time.time()
+            poly = r.POLY(coeff)
+            end_t = time.time()
 
-print(means)
+            count += 1
+            print_bar(count, total)
+
+            times.append(float(end_t - start_t))
+        means.append(np.average(times))
+    plot_runtimes(np.linspace(2, max_degrees+2, max_degrees), means)
+    print(means)
