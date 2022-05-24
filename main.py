@@ -2,17 +2,12 @@
 NEWTON'S FRACTAL
 
 Using roots.py, create a live animation which shows "newton's fractal"
-
-using https://youtu.be/-RdOwhmqP5s
+REF 1 - https://youtu.be/-RdOwhmqP5s
 '''
 import matplotlib.pyplot as plt
 import numpy as np
 import roots as r
 import sys, time
-
-# default WIDTH / HEIGHT
-WIDTH = 1080
-HEIGHT = 720
 
 def print_bar(progress, total):
     '''
@@ -50,15 +45,11 @@ def plot_complex(roots, coeff): #TODO: make this plot the axis for more details
     plt.show()
 
 def find_all_roots(fr, WIDTH, HEIGHT):
-    for x in range(0, HEIGHT):
-        for y in range(0, WIDTH):
-            root = fr.which_root(x, y)
-            fr.painter.draw_pixel(x, y, root)               # painter
+    for x in range(HEIGHT):
+        for y in range(WIDTH):
+            root = fr.which_root(x, y)              # FIND ROOT @ POINT
+            fr.painter.draw_resolution(x, y, root)  # CALL TO DRAW POINT
             # print(f"x={x} y={y} has the root= {fr.which_root(x,y)}")
-
-# default poly
-# curr_poly = r.POLY([5, 4, 3, 2, 1, 10], n=50)
-# fr = r.FRACTAL(curr_poly)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1: 
@@ -78,11 +69,8 @@ if __name__ == "__main__":
 
         try:
             fr = r.FRACTAL(f)
-            print(f"found root: {fr.which_root(1,1)}")
         except Exception as e:
             print(f"couldn't find which root that is: \n\t{e}")
-
-        # finding all points on the canvas
 
         try:
             find_all_roots(fr, fr.painter.get_resolution(), fr.painter.get_resolution())
@@ -91,8 +79,4 @@ if __name__ == "__main__":
             print(f"error with all roots: {e}\n\t")
     else:
         pass
-
-    print("loading polynomial...\n")
-    print("loading Gui...\n")
-
     time.sleep(30)

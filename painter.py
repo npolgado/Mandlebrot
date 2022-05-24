@@ -1,7 +1,7 @@
 import pygame, time, random, os
 
 class Painter:
-    def __init__(self):
+    def __init__(self, poly_dict=None):
         pygame.init()
 
         pygame.display.set_caption('Fractals Babyy')
@@ -11,7 +11,10 @@ class Painter:
         self.__size__ = self.__resolution__ * self.__scalar__
         self.__screen__ = pygame.display.set_mode((self.__size__, self.__size__))
 
-        self.__resolution_dict__ = {}
+        if poly_dict == None:
+            self.__resolution_dict__ = {}
+        else:
+            self.__resolution_dict__ = list(dict.fromkeys(poly_dict['root']))
 
         self.clear()
         self.draw_skeleton()
@@ -21,8 +24,8 @@ class Painter:
         return self.__resolution__
 
     def draw_skeleton(self):
-        pygame.draw.line(self.__screen__, (0,0,0), (self.__resolution__/2, 0), (self.__resolution__/2, self.__resolution__))   # vertical line
-        pygame.draw.line(self.__screen__, (0,0,0), (0, self.__resolution__/2), (self.__resolution__, self.__resolution__/2))  # horizontal line
+        pygame.draw.line(self.__screen__, (0,0,0), (self.__size__/2, 0), (self.__size__/2, self.__size__))   # vertical line
+        pygame.draw.line(self.__screen__, (0,0,0), (0, self.__size__/2), (self.__size__, self.__size__/2))  # horizontal line
 
     def draw_resolution(self, x, y, id):
         # print(f"id={id}  ({x}, {y})")

@@ -28,8 +28,7 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
     def __init__(self, poly):
         self.poly = poly        
         self.dict = self.poly.calculated
-        print("reached!!\n\n")
-        self.painter = p.Painter()
+        self.painter = p.Painter() #extra param not implemented
 
     def which_root(self, x, y, maxIter=1000):
         '''
@@ -205,7 +204,6 @@ class POLY():
             else:
                 count -= 1
         return ans
-
 
 # CLI HANDLING
 if __name__ == "__main__":
