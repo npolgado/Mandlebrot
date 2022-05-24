@@ -15,6 +15,7 @@ QUICK NOTES:
   recalculating poly, and changing the oo func
 '''
 
+
 def print_bar(progress, total):
     '''
     print_bar: uses total and progress to determine progress in percentage
@@ -27,6 +28,7 @@ def print_bar(progress, total):
     percent = 100 * (progress / float(total))
     bar = '*' * int(percent) + '-' * (100-int(percent))
     print(f"\r|{bar}| {percent:.2f}%", end='\r')
+
 
 def plot_complex(roots, coeff): #TODO: make this plot the axis for more details
     '''
@@ -50,12 +52,14 @@ def plot_complex(roots, coeff): #TODO: make this plot the axis for more details
     plt.grid(True)
     plt.show()
 
+
 def find_all_roots(fr, WIDTH, HEIGHT):
     for x in range(0, WIDTH):
         for y in range(0, HEIGHT):
             root = fr.which_root(x,y)
             fr.painter.draw_pixel(x, y)               # painter
             # print(f"x={x} y={y} has the root= {fr.which_root(x,y)}")
+
 
 class FRACTAL(): #use this as the dictionary, input must be a poly
     def __init__(self, poly):
@@ -84,6 +88,7 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
             guess = next_guess
         
         print("Couldn't find a root for this point")
+
 
 class POLY():
     def __init__(self, coefficients, lowerB=-10, upperB=10, n=20):
@@ -223,10 +228,11 @@ class POLY():
                 count -= 1
         return ans
 
-#CLI HANDLING
+
+# CLI HANDLING
 if __name__ == "__main__":
     if len(sys.argv) > 1: 
-        #has args
+        # has args
         args = [int(x) for x in sys.argv[1:]]
         print("finding roots to polynomial {}...".format(args))
         
@@ -264,3 +270,5 @@ if __name__ == "__main__":
         #     print("error with all roots")
     else:
         pass
+
+    time.sleep(30)
