@@ -69,18 +69,18 @@ if __name__ == "__main__":
         try:
             f = r.POLY(args)
         except Exception as e:
-            print("ERROR loading polynomial...")
+            print(f"ERROR loading polynomial: \n\t{e}")
 
         try:
             plot_complex(f.roots, f.coefficients)
         except Exception as e:
-            print("ERROR printing roots...")
+            print(f"ERROR printing roots: \n\t{e}")
 
         try:
             fr = r.FRACTAL(f)
             print(f"found root: {fr.which_root(1,1)}")
         except Exception as e:
-            print("couldn't find which root that is...")
+            print(f"couldn't find which root that is: \n\t{e}")
 
         # finding all points on the canvas
 
@@ -88,8 +88,7 @@ if __name__ == "__main__":
             find_all_roots(fr, fr.painter.get_pixels(), fr.painter.get_pixels())
             print("found all roots!!")
         except Exception as e:
-            print(e)
-            print("error with all roots")
+            print(f"error with all roots: {e}\n\t")
     else:
         pass
 
