@@ -85,7 +85,7 @@ if __name__ == "__main__":
         # finding all points on the canvas
 
         try:
-            find_all_roots(fr, fr.painter.get_pixels(), fr.painter.get_pixels())
+            find_all_roots(fr, fr.painter.get_pixels()//10, fr.painter.get_pixels()//10)
             print("found all roots!!")
         except Exception as e:
             print(f"error with all roots: {e}\n\t")
@@ -95,4 +95,4 @@ if __name__ == "__main__":
     print("loading polynomial...\n")
     print("loading Gui...\n")
 
-    time.sleep(3)
+    time.sleep(30)

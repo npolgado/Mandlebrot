@@ -32,7 +32,7 @@ class Painter:
             color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
             self.__pixel_dict__[id] = color
 
-        self.__screen__.fill(color, ((x,y), (1, 1)))
+        self.__screen__.fill(color, ((x*10,y*10), (10, 10)))
 
         self.update()
 
