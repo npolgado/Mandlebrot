@@ -23,7 +23,7 @@ class Painter:
         pygame.draw.line(self.__screen__, (0,0,0), (0, self.__pixels__/2), (self.__pixels__, self.__pixels__/2))  # horizontal line
 
     def draw_pixel(self, x, y, id):
-        print(f"id={id}  ({x}, {y})")
+        # print(f"id={id}  ({x}, {y})")
 
         if id in self.__pixel_dict__.keys():
             color = self.__pixel_dict__[id]
