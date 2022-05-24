@@ -1,9 +1,8 @@
 '''FINIDNG ROOTS
 '''
-import matplotlib.pyplot as plt
 import numpy as np
 import painter as p
-import time, sys
+import time
 
 SIZE = 1024         # size of canvas
 DELTA = 1e-10       # when to stop calculating root
@@ -14,49 +13,6 @@ QUICK NOTES:
 - how do we handle changing the roots,
   recalculating poly, and changing the oo func
 '''
-
-def print_bar(progress, total):
-    '''
-    print_bar: uses total and progress to determine progress in percentage
-
-    :param progress: current progress (less than total)
-    :param total: total amount of iterations
-
-    :return: None (plots graph)
-    '''
-    percent = 100 * (progress / float(total))
-    bar = '*' * int(percent) + '-' * (100-int(percent))
-    print(f"\r|{bar}| {percent:.2f}%", end='\r')
-
-
-def plot_complex(roots, coeff): #TODO: make this plot the axis for more details
-    '''
-    plot_complex: using the roots and coefficients of the polynomial, 
-    plot the roots using matplotlib
-
-    :param roots: array of polynomial roots
-    :param coeff: array of polynomial coefficients in decending order (highest degree first!)
-
-    :return: matplotlib plot of roots from polynomial with labels
-    '''
-    x = [np.real(ele) for ele in roots]  # extract real part
-    y = [np.imag(ele) for ele in roots]  # extract imaginary part
-    
-    # plot the complex numbers
-    fig = plt.figure()
-    ax = fig.add_subplot()
-    c = ax.scatter(x, y)
-    plt.ylabel('Imaginary')
-    plt.xlabel('Real')
-    plt.grid(True)
-    plt.show()
-
-def find_all_roots(fr, WIDTH, HEIGHT):
-    for x in range(0, HEIGHT):
-        for y in range(0, WIDTH):
-            root = fr.which_root(x, y)
-            fr.painter.draw_pixel(x, y)               # painter
-            # print(f"x={x} y={y} has the root= {fr.which_root(x,y)}")
 
 def root_finder_helper(next_guess, poly):
     closest = abs(next_guess - poly.roots[0])
@@ -72,6 +28,7 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
     def __init__(self, poly):
         self.poly = poly        
         self.dict = self.poly.calculated
+        print("reached!!\n\n")
         self.painter = p.Painter()
 
     def which_root(self, x, y, maxIter=1000):
@@ -118,7 +75,16 @@ class POLY():
         end_t = time.time() 
         self.time_efficiency = float(end_t - start_t)
 
-    def adjust(self, new_coeff):
+    def adjust(self, new_coeff, lowerB=-10, upperB=10, n=20):
+        '''
+        adjust: given a new polynomial coefficient input, reset data inside this object to new appropriate roots
+
+        :param new_coeff: array of coefficients from highest degree decending
+        :param lowerb: (optional) lower bound for calculation samples
+        :param upperb: (optional) upper bound for calculation samples
+        :param n: number of iterations per sample point
+        :return: nothing: changes values
+        '''
         assert(len(new_coeff) >= 1)
 
         self.calculated = { #RESET DP, no need for previous data
@@ -127,8 +93,11 @@ class POLY():
         }
 
         self.coefficients = new_coeff
+        self.lowerB = lowerB
+        self.upperB = upperB
+        self.n = n
         self.derivative = np.polyder(self.coefficients, 1)
-        self.roots = self.calc_roots(self.lowerB, self.upperB, self.n)
+        self.roots = self.calc_roots(lowerB, upperB, n)
 
     def calc_roots(self, lowerB, upperB, N):
         '''
@@ -240,44 +209,4 @@ class POLY():
 
 # CLI HANDLING
 if __name__ == "__main__":
-    if len(sys.argv) > 1: 
-        # has args
-        args = [int(x) for x in sys.argv[1:]]
-        print("finding roots to polynomial {}...".format(args))
-        
-        try:
-            f = POLY(args)
-        except:
-            print("ERROR loading polynomial...")
-
-        try:
-            print(f"{f.get_name()}\t")
-        except:
-            print("ERROR printing polynomial name...")
-
-        try:
-            print(f"{np.reshape(f.roots, (len(f.roots), 1))}")
-        except:
-            print("ERROR printing roots...")
-
-        # try:
-        #     plot_complex(f.roots, f.coefficients)
-        # except:
-        #     print("ERROR printing roots...")
-
-        try:
-            fr = FRACTAL(f)
-            print(f"found root: {fr.which_root(1,1)}")
-        except:
-            print("couldn't find which root that is...")
-
-        #finding all points on the canvas
-        try:
-            find_all_roots(fr, fr.painter.pixels, fr.painter.pixels)
-            print("found all roots!!")
-        except:
-            print("error with all roots")
-    else:
-        pass
-
-    time.sleep(30)
+    print("compiled! use as a library!")
