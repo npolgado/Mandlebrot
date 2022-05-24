@@ -6,33 +6,35 @@ class Painter:
 
         pygame.display.set_caption('Fractals Babyy')
 
-        self.__pixels__ = 1000
-        self.__screen__ = pygame.display.set_mode((self.__pixels__, self.__pixels__))
+        self.__resolution__ = 100
+        self.__scalar__ = 10
+        self.__size__ = self.__resolution__ * self.__scalar__
+        self.__screen__ = pygame.display.set_mode((self.__size__, self.__size__))
 
-        self.__pixel_dict__ = {}
+        self.__resolution_dict__ = {}
 
         self.clear()
         self.draw_skeleton()
         self.update()
 
-    def get_pixels(self):
-        return self.__pixels__
+    def get_resolution(self):
+        return self.__resolution__
 
     def draw_skeleton(self):
-        pygame.draw.line(self.__screen__, (0,0,0), (self.__pixels__/2, 0), (self.__pixels__/2, self.__pixels__))   # vertical line
-        pygame.draw.line(self.__screen__, (0,0,0), (0, self.__pixels__/2), (self.__pixels__, self.__pixels__/2))  # horizontal line
+        pygame.draw.line(self.__screen__, (0,0,0), (self.__resolution__/2, 0), (self.__resolution__/2, self.__resolution__))   # vertical line
+        pygame.draw.line(self.__screen__, (0,0,0), (0, self.__resolution__/2), (self.__resolution__, self.__resolution__/2))  # horizontal line
 
-    def draw_pixel(self, x, y, id):
+    def draw_resolution(self, x, y, id):
         # print(f"id={id}  ({x}, {y})")
 
-        if id in self.__pixel_dict__.keys():
-            color = self.__pixel_dict__[id]
+        if id in self.__resolution_dict__.keys():
+            color = self.__resolution_dict__[id]
 
         else:
             color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            self.__pixel_dict__[id] = color
+            self.__resolution_dict__[id] = color
 
-        self.__screen__.fill(color, ((x*10,y*10), (10, 10)))
+        self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
 
         self.update()
 
@@ -43,5 +45,3 @@ class Painter:
     def update(self):
         pygame.display.flip()
 
-# TODO:
-#  - change "roots" pixels -> get_pixels

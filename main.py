@@ -85,7 +85,7 @@ if __name__ == "__main__":
         # finding all points on the canvas
 
         try:
-            find_all_roots(fr, fr.painter.get_pixels()//10, fr.painter.get_pixels()//10)
+            find_all_roots(fr, fr.painter.get_resolution(), fr.painter.get_resolution())
             print("found all roots!!")
         except Exception as e:
             print(f"error with all roots: {e}\n\t")
