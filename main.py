@@ -3,6 +3,14 @@ NEWTON'S FRACTAL
 
 Using roots.py, create a live animation which shows "newton's fractal"
 REF 1 - https://youtu.be/-RdOwhmqP5s
+
+
+TODO:
+    - fix handing window when doing anything on comp.
+    - add roots to plot
+    - add axis to plot
+    - improve drawing speed
+    - improve calc time_efficiency
 '''
 import matplotlib.pyplot as plt
 import numpy as np
@@ -44,13 +52,6 @@ def plot_complex(roots, coeff): #TODO: make this plot the axis for more details
     plt.grid(True)
     plt.show()
 
-def find_all_roots(fr, WIDTH, HEIGHT):
-    for x in range(HEIGHT):
-        for y in range(WIDTH):
-            root = fr.which_root(x, y)              # FIND ROOT @ POINT
-            fr.painter.draw_resolution(x, y, root)  # CALL TO DRAW POINT
-            # print(f"x={x} y={y} has the root= {fr.which_root(x,y)}")
-
 if __name__ == "__main__":
     if len(sys.argv) > 1: 
         # has args
@@ -59,6 +60,9 @@ if __name__ == "__main__":
         
         try:
             f = r.POLY(args)
+            print(f"\tloaded poly in {f.time_efficiency} seconds")
+            # print(f"\tFOUND ROOTS \n{f.roots}\n")
+            # print(f"\tFOUND ROOTS \n{f.calculated['root']}\n")
         except Exception as e:
             print(f"ERROR loading polynomial: \n\t{e}")
 
@@ -73,7 +77,7 @@ if __name__ == "__main__":
             print(f"couldn't find which root that is: \n\t{e}")
 
         try:
-            find_all_roots(fr, fr.painter.get_resolution(), fr.painter.get_resolution())
+            fr.find_all_roots(fr.painter.get_resolution(), fr.painter.get_resolution())
             print("found all roots!!")
         except Exception as e:
             print(f"error with all roots: {e}\n\t")

@@ -30,6 +30,21 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         self.dict = self.poly.calculated
         self.painter = p.Painter() #extra param not implemented
 
+    def find_all_roots(self, WIDTH, HEIGHT):
+        '''
+        find_all_roots: uses the FRACTAL object and a width and height to find the root at every point
+
+        :param fr: FRACTAL OBJECT
+        :param WIDTH: num points in x axis dimension
+        :param HEIGHT: num points in y axis dimension
+        :return: nothing, call which_root and draw for every point
+        '''
+        for x in range(HEIGHT):
+            for y in range(WIDTH):
+                root = self.which_root(x, y)              # FIND ROOT @ POINT
+                self.painter.draw_resolution(x, y, root)  # CALL TO DRAW POINT
+                # print(f"x={x} y={y} has the root= {fr.which_root(x,y)}")
+
     def which_root(self, x, y, maxIter=1000):
         '''
         which_root: uses lookup table from polynomial to find all the values on the canvas
@@ -126,13 +141,14 @@ class POLY():
                             roots.append(next_guess)
                         else:
                             isIn = False
-                            for m, root in enumerate(roots):                                                        # add to known if not already found
+                            for root in roots:                                                        # add to known if not already found
                                 if abs(guess - root) < DELTA:
                                     isIn = True
                             
                             if isIn == False:
                                 roots.append(next_guess)                                                            # add to return if new root
-                            break
+                        
+                        break
                 
                 # DO CALC IF NOT FOUND
                 if alreadyFound == False:
@@ -155,7 +171,8 @@ class POLY():
                                 
                                 if isIn == False:
                                     roots.append(next_guess)                                                        # add to return if new root
-                                break
+                            break
+
                         guess = next_guess
         return roots
 

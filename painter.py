@@ -2,19 +2,32 @@ import pygame, time, random, os
 
 class Painter:
     def __init__(self, poly_dict=None):
+    def __init__(self, poly_roots=None):
         pygame.init()
 
         pygame.display.set_caption('Fractals Babyy')
 
         self.__resolution__ = 100
         self.__scalar__ = 10
+        self.__resolution__ = 250
+        self.__scalar__ = 4
         self.__size__ = self.__resolution__ * self.__scalar__
         self.__screen__ = pygame.display.set_mode((self.__size__, self.__size__))
 
         if poly_dict == None:
+        if poly_roots == None:
             self.__resolution_dict__ = {}
         else:
             self.__resolution_dict__ = list(dict.fromkeys(poly_dict['root']))
+            self.__resolution_dict__ = poly_roots
+            # format dict from old dict (in poly)
+            '''
+                DICT = {
+                    root = [] # root by index (part of poly) TODO: remove duplicates
+                              # list(dict.fromkeys(poly_dict['root']))
+                    color = [] # color by index
+                }
+            '''
 
         self.clear()
         self.draw_skeleton()
