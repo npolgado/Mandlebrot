@@ -113,7 +113,7 @@ class POLY():
         self.derivative = np.polyder(self.coefficients, 1)
         self.roots = self.calc_roots(lowerB, upperB, n)
 
-    def calc_roots(self, lowerB, upperB, N):
+    def calc_roots(self, lowerB, upperB, N, doPrint=False):
         '''
         calc_roots: return the roots of the polynomial object
         :param lowerB: lower bound for generating inital guesses
