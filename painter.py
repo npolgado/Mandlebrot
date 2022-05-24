@@ -7,7 +7,7 @@ class Painter:
         pygame.display.set_caption('Fractals Babyy')
 
         self.__pixels__ = 1000
-        self.__screen__ = pygame.display.set_mode((self.pixels, self.pixels))
+        self.__screen__ = pygame.display.set_mode((self.__pixels__, self.__pixels__))
 
         self.__pixel_dict__ = {}
 
@@ -19,8 +19,8 @@ class Painter:
         return self.__pixels__
 
     def draw_skeleton(self):
-        pygame.draw.line(self.screen, (0,0,0), (self.pixels/2, 0), (self.pixels/2, self.pixels))   # vertical line
-        pygame.draw.line(self.screen, (0,0,0), (0, self.pixels/2), (self.pixels, self.pixels/2))  # horizontal line
+        pygame.draw.line(self.screen, (0,0,0), (self.__pixels__/2, 0), (self.__pixels__/2, self.__pixels__))   # vertical line
+        pygame.draw.line(self.screen, (0,0,0), (0, self.__pixels__/2), (self.__pixels__, self.__pixels__/2))  # horizontal line
 
     def draw_pixel(self, x, y, id):
         print(f"id={id}  ({x}, {y})")
