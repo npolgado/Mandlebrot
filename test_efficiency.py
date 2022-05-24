@@ -31,8 +31,8 @@ def plot_runtimes(x, y):
     plt.show()
 
 if __name__ == "__main__":
-    max_degrees = 25
-    max_samples = 3
+    max_degrees = 40
+    max_samples = 1
 
     total = max_degrees * max_samples
     count = 0

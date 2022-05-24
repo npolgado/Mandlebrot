@@ -63,7 +63,7 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         self.dict = self.poly.calculated
         self.painter = p.Painter()
 
-    def which_root(self, x, y):
+    def which_root(self, x, y, maxIter=1000):
         '''
         which_root: uses lookup table from polynomial to find all the values on the canvas
 
@@ -74,15 +74,16 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         guess = x + y*1j
 
         for i, known_guess in enumerate(self.dict['guess']):    # check table
-
             if abs(guess - known_guess) < DELTA:
                 return self.dict['root'][i]                     # if calculated already: return root
         
-        for n in range(1000):                                   # if not in table: do calc
+        for n in range(maxIter):                                   # if not in table: do calc
             next_guess = guess - (self.poly.eval(guess) / self.poly.eval_derivative(guess))
             if abs(next_guess - guess) < DELTA:                 # found new ans
                 return next_guess
             guess = next_guess
+        
+        print("Couldn't find a root for this point")
 
 class POLY():
     def __init__(self, coefficients, lowerB=-10, upperB=10, n=20):
@@ -255,10 +256,11 @@ if __name__ == "__main__":
         except:
             print("couldn't find which root that is...")
 
-        try:
-            find_all_roots(fr, 1000, 1000)
-            print("found all roots!!")
-        except:
-            print("error with all roots")
+        # finding all points on the canvas
+        # try:
+        #     find_all_roots(fr, 1000, 1000)
+        #     print("found all roots!!")
+        # except:
+        #     print("error with all roots")
     else:
         pass
