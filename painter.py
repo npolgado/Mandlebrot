@@ -16,7 +16,7 @@ class Painter:
         self.update()
 
     def get_pixels(self):
-        return self.__pixels__()
+        return self.__pixels__
 
     def draw_skeleton(self):
         pygame.draw.line(self.screen, (0,0,0), (self.pixels/2, 0), (self.pixels/2, self.pixels))   # vertical line
@@ -42,7 +42,6 @@ class Painter:
 
     def update(self):
         pygame.display.flip()
-
 
 # TODO:
 #  - change "roots" pixels -> get_pixels

@@ -83,8 +83,9 @@ if __name__ == "__main__":
             print("couldn't find which root that is...")
 
         # finding all points on the canvas
+
         try:
-            find_all_roots(fr, fr.painter.get_pixels(), fr.painter.get_pixels)
+            find_all_roots(fr, fr.painter.get_pixels(), fr.painter.get_pixels())
             print("found all roots!!")
         except:
             print("error with all roots")
