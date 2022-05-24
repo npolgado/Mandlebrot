@@ -262,12 +262,12 @@ if __name__ == "__main__":
         except:
             print("couldn't find which root that is...")
 
-        # finding all points on the canvas
-        # try:
-        #     find_all_roots(fr, 1000, 1000)
-        #     print("found all roots!!")
-        # except:
-        #     print("error with all roots")
+        #finding all points on the canvas
+        try:
+            find_all_roots(fr, fr.painter.pixels, fr.painter.pixels)
+            print("found all roots!!")
+        except:
+            print("error with all roots")
     else:
         pass
 
