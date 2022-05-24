@@ -15,7 +15,6 @@ QUICK NOTES:
   recalculating poly, and changing the oo func
 '''
 
-
 def print_bar(progress, total):
     '''
     print_bar: uses total and progress to determine progress in percentage
@@ -52,14 +51,22 @@ def plot_complex(roots, coeff): #TODO: make this plot the axis for more details
     plt.grid(True)
     plt.show()
 
-
 def find_all_roots(fr, WIDTH, HEIGHT):
-    for x in range(0, WIDTH):
-        for y in range(0, HEIGHT):
-            root = fr.which_root(x,y)
+    for x in range(0, HEIGHT):
+        for y in range(0, WIDTH):
+            root = fr.which_root(x, y)
             fr.painter.draw_pixel(x, y)               # painter
             # print(f"x={x} y={y} has the root= {fr.which_root(x,y)}")
 
+def root_finder_helper(next_guess, poly):
+    closest = abs(next_guess - poly.roots[0])
+    index = 0
+    for i, root in enumerate(poly.roots[1:]):
+        new_closest = abs(next_guess - root)
+        if  new_closest < closest:
+            closest = new_closest
+            index = i
+    return poly.roots[index]
 
 class FRACTAL(): #use this as the dictionary, input must be a poly
     def __init__(self, poly):
@@ -76,19 +83,21 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         :return: the root which this initial guess calculates
         '''
         guess = x + y*1j
+        # print(f"which_root --> ({x}, {y})")
 
         for i, known_guess in enumerate(self.dict['guess']):    # check table
             if abs(guess - known_guess) < DELTA:
+                # print(f"DICTIONARY ROOT@{self.dict['root'][i]}")
                 return self.dict['root'][i]                     # if calculated already: return root
         
         for n in range(maxIter):                                   # if not in table: do calc
             next_guess = guess - (self.poly.eval(guess) / self.poly.eval_derivative(guess))
             if abs(next_guess - guess) < DELTA:                 # found new ans
+                # print(f"CALCULATION ROOT@{next_guess}")
                 return next_guess
             guess = next_guess
         
-        print("Couldn't find a root for this point")
-
+        return root_finder_helper(next_guess, self.poly)
 
 class POLY():
     def __init__(self, coefficients, lowerB=-10, upperB=10, n=20):
