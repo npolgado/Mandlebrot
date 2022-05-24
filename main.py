@@ -53,7 +53,7 @@ def find_all_roots(fr, WIDTH, HEIGHT):
     for x in range(0, HEIGHT):
         for y in range(0, WIDTH):
             root = fr.which_root(x, y)
-            fr.painter.draw_pixel(x, y)               # painter
+            fr.painter.draw_pixel(x, y, root)               # painter
             # print(f"x={x} y={y} has the root= {fr.which_root(x,y)}")
 
 # default poly
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
         # #finding all points on the canvas
         # try:
-        #     find_all_roots(fr, fr.painter.pixels, fr.painter.pixels)
+        #     find_all_roots(fr, fr.painter.get_pixels(), fr.painter.pixels)
         #     print("found all roots!!")
         # except:
         #     print("error with all roots")
