@@ -76,21 +76,20 @@ if __name__ == "__main__":
         except:
             print("ERROR printing roots...")
 
-        # try:
-        #     fr = r.FRACTAL(f)
-        #     print(f"found root: {fr.which_root(1,1)}")
-        # except:
-        #     print("couldn't find which root that is...")
+        try:
+            fr = r.FRACTAL(f)
+            print(f"found root: {fr.which_root(1,1)}")
+        except:
+            print("couldn't find which root that is...")
 
-        # #finding all points on the canvas
-        # try:
-        #     find_all_roots(fr, fr.painter.get_pixels(), fr.painter.pixels)
-        #     print("found all roots!!")
-        # except:
-        #     print("error with all roots")
+        # finding all points on the canvas
+        try:
+            find_all_roots(fr, fr.painter.get_pixels(), fr.painter.get_pixels)
+            print("found all roots!!")
+        except:
+            print("error with all roots")
     else:
         pass
 
-    time.sleep(30)
     print("loading polynomial...\n")
     print("loading Gui...\n")
