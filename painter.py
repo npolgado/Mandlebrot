@@ -18,9 +18,9 @@ class Painter:
             # format dict from old dict (in poly)
             '''
                 DICT = {
-                    root = [] # root by index (part of poly) TODO: remove duplicates
-                              # list(dict.fromkeys(poly_dict['root']))
-                    color = [] # color by index
+                    guess = []                  # NOT USED FOR PAINTER
+                    root = []                   # CONTAINS DUPLICATES, REDUCE DOWN
+                    color = []                  # FILL COLORS BY INDEX 
                 }
             '''
 

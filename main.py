@@ -6,11 +6,13 @@ REF 1 - https://youtu.be/-RdOwhmqP5s
 
 
 TODO:
-    - fix handing window when doing anything on comp.
-    - add roots to plot
-    - add axis to plot
-    - improve drawing speed
-    - improve calc time_efficiency
+    - fix handing window when doing anything on comp (ERIC)
+    - add roots to plot (ERIC)
+    - add axis to plot (ERIC)
+    - change scaling to be seperate for WIDTH and HEIGHT (diff window sizes) (BOTH)
+    - improve drawing speed (BOTH)
+    - improve calc time_efficiency (NICK)
+    - improve root.py logic (adjusting, less memory) (NICK)
 '''
 import matplotlib.pyplot as plt
 import numpy as np
@@ -30,7 +32,7 @@ def print_bar(progress, total):
     bar = '*' * int(percent) + '-' * (100-int(percent))
     print(f"\r|{bar}| {percent:.2f}%", end='\r')
 
-def plot_complex(roots, coeff): #TODO: make this plot the axis for more details
+def plot_complex(roots): #TODO: make this plot the axis for more details
     '''
     plot_complex: using the roots and coefficients of the polynomial, 
     plot the roots using matplotlib
@@ -67,7 +69,7 @@ if __name__ == "__main__":
             print(f"ERROR loading polynomial: \n\t{e}")
 
         try:
-            plot_complex(f.roots, f.coefficients)
+            plot_complex(f.roots)
         except Exception as e:
             print(f"ERROR printing roots: \n\t{e}")
 

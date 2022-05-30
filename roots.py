@@ -15,6 +15,13 @@ QUICK NOTES:
 '''
 
 def root_finder_helper(next_guess, poly):
+    '''
+    root_finder_helper: find the nearest root in the case that a root in never found
+
+    :param next_guess: the last iteration guess that couldn't find a root
+    :param poly: root.py POLY structure 
+    :return: the root that is closest to the next_guess param
+    '''
     closest = abs(next_guess - poly.roots[0])
     index = 0
     for i, root in enumerate(poly.roots[1:]):
