@@ -63,15 +63,15 @@ if __name__ == "__main__":
         try:
             f = r.POLY(args)
             print(f"\tloaded poly in {f.time_efficiency} seconds")
-            # print(f"\tFOUND ROOTS \n{f.roots}\n")
+            print(f"\nFOUND ROOTS \n{f.roots}\n")
             # print(f"\tFOUND ROOTS \n{f.calculated['root']}\n")
         except Exception as e:
             print(f"ERROR loading polynomial: \n\t{e}")
 
-        try:
-            plot_complex(f.roots)
-        except Exception as e:
-            print(f"ERROR printing roots: \n\t{e}")
+        # try:
+        #     plot_complex(f.roots)
+        # except Exception as e:
+        #     print(f"ERROR printing roots: \n\t{e}")
 
         try:
             fr = r.FRACTAL(f)
@@ -84,5 +84,6 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"error with all roots: {e}\n\t")
     else:
+        print(f"couldn't load initial polynomial arguments, try running main.py with parameters # # # # # (# = number, USE SPACES")
         pass
     time.sleep(30)
