@@ -109,6 +109,7 @@ class POLY():
         sampleR = [np.random.uniform(lowerB, upperB) for x in range(N)]
         sampleI = [np.random.uniform(lowerB, upperB) for x in range(N)]
 
+        roots_found = 0     # keeps track of how many times the efficiency was triggered
         for r in sampleR:
             for i in sampleI:
                 guess = r + i*1j
@@ -116,9 +117,11 @@ class POLY():
                 
                 if self.round_complex(guess, 8) in self.dict.keys():
                     # already found root
+                    roots_found += 1
+                    print(f"already found root (num: {roots_found})")
                     continue
                 
-                else:
+                else
                     # root not found
                     # do next_guess
                     original_guess = guess
