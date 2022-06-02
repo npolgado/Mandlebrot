@@ -34,8 +34,8 @@ def root_finder_helper(next_guess, poly):
 class FRACTAL(): #use this as the dictionary, input must be a poly
     def __init__(self, poly):
         self.poly = poly        
-        self.dict = self.poly.calculated
-        self.painter = p.Painter() #extra param not implemented
+        self.dict = poly.dict
+        self.painter = p.Painter(poly.dict) #extra param not implemented
 
     def find_all_roots(self, WIDTH, HEIGHT):
         '''
@@ -48,11 +48,16 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         '''
         for x in range(HEIGHT):
             for y in range(WIDTH):
-                root = self.which_root(x, y)              # FIND ROOT @ POINT
-                self.painter.draw_resolution(x, y, root)  # CALL TO DRAW POINT
-                # print(f"x={x} y={y} has the root= {fr.which_root(x,y)}")
+                position = x + y*1j
+                position_rounded = self.poly.round_complex(position, 8)
 
-    def which_root(self, x, y, maxIter=1000):
+                if position_rounded in self.dict.keys(): # root known... 
+                    self.painter.draw_resolution(x, y, position_rounded)
+                else:
+                    root = self.poly.round_complex(self.which_root(position), 8)
+                    self.painter.draw_resolution(x, y, root)
+
+    def which_root(self, guess, maxIter=1000):
         '''
         which_root: uses lookup table from polynomial to find all the values on the canvas
 
@@ -60,21 +65,17 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         :param y: imaginary component, or y coordinate
         :return: the root which this initial guess calculates
         '''
-        guess = x + y*1j
-        # print(f"which_root --> ({x}, {y})")
+        original_guess = guess
 
-        for i, known_guess in enumerate(self.dict['guess']):    # check table
-            if abs(guess - known_guess) < DELTA:
-                # print(f"DICTIONARY ROOT@{self.dict['root'][i]}")
-                return self.dict['root'][i]                     # if calculated already: return root
-        
-        for n in range(maxIter):                                   # if not in table: do calc
+        for iteration in range(maxIter):
             next_guess = guess - (self.poly.eval(guess) / self.poly.eval_derivative(guess))
-            if abs(next_guess - guess) < DELTA:                 # found new ans
-                # print(f"CALCULATION ROOT@{next_guess}")
+            if abs(next_guess - guess) < DELTA:  
+                # found a new root!
                 return next_guess
-            guess = next_guess
-        
+
+            # not a root this iteration
+            guess = next_guess    
+
         return root_finder_helper(next_guess, self.poly)
 
 class POLY():
@@ -94,34 +95,10 @@ class POLY():
 
         self.time_efficiency = float(end_t - start_t)
 
-    def adjust(self, new_coeff, lowerB=-10, upperB=10, n=20):
-        '''
-        adjust: given a new polynomial coefficient input, reset data inside this object to new appropriate roots
-
-        :param new_coeff: array of coefficients from highest degree decending
-        :param lowerb: (optional) lower bound for calculation samples
-        :param upperb: (optional) upper bound for calculation samples
-        :param n: number of iterations per sample point
-        :return: nothing: changes values
-        '''
-        assert(len(new_coeff) >= 1)
-
-        self.calculated = { #RESET DP, no need for previous data
-            'guess' : [],
-            'root': []
-        }
-
-        self.coefficients = new_coeff
-        self.lowerB = lowerB
-        self.upperB = upperB
-        self.n = n
-        self.derivative = np.polyder(self.coefficients, 1)
-        self.roots = self.calc_roots(lowerB, upperB, n)
-
     def round_complex(self, complex, decimal):
         return round(np.real(complex), decimal) + round(np.imag(complex), decimal)*1j
 
-    def calc_roots(self, lowerB, upperB, N, doPrint=False, maxIter=1000):
+    def calc_roots(self, lowerB, upperB, N, maxIter=1000):
         '''
         calc_roots: return the roots of the polynomial object
         :param lowerB: lower bound for generating inital guesses
@@ -160,7 +137,7 @@ class POLY():
                         guesses_path.append(next_guess)
                         guess = next_guess    
 
-        return set(self.dict.values())            
+        return list(set(self.dict.values()))            
 
     def eval(self, x):
         '''

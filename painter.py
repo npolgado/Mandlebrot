@@ -3,7 +3,7 @@ import pygame, time, random, os
 import numpy as np
 
 class Painter:
-    def __init__(self, poly_roots=None):
+    def __init__(self, poly_dict=None):
         pygame.init()
 
         self.i = 0
@@ -15,22 +15,27 @@ class Painter:
         self.__size__ = self.__resolution__ * self.__scalar__
         self.__screen__ = pygame.display.set_mode((self.__size__, self.__size__))
 
-        if poly_roots == None:
-            self.__resolution_dict__ = {}
-        else:
-            self.__resolution_dict__ = poly_roots
-            # format dict from old dict (in poly)
-            '''
-                DICT = {
-                    guess = []                  # NOT USED FOR PAINTER
-                    root = []                   # CONTAINS DUPLICATES, REDUCE DOWN
-                    color = []                  # FILL COLORS BY INDEX 
-                }
-            '''
+        self.__resolution_dict__ = {}
+
+        if poly_dict != None:
+            self.sort_dict(poly_dict)          
 
         self.clear()
         self.draw_skeleton()
         self.update()
+
+    def sort_dict(self, poly_dict):
+        # get unique roots in the previous dictionary
+        roots = list(set(poly_dict.values())) 
+        
+        # map each root to a unique color
+        color_map = []
+        for root in roots:
+            color_map.append((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+        
+        for guess in poly_dict.keys():
+            root = poly_dict[guess]
+            self.__resolution_dict__[guess] = color_map[roots.index(root)]
 
     def get_resolution(self):
         return self.__resolution__
@@ -40,27 +45,27 @@ class Painter:
         pygame.draw.line(self.__screen__, (0,0,0), (0, self.__size__/2), (self.__size__, self.__size__/2))  # horizontal line
 
     def draw_resolution(self, x, y, id):
-        if (self.i % 10000 == 0):
-            print(self.i)
-        self.i += 1
-        pass
+        # if (self.i % 10000 == 0):
+        #     print(self.i)
+        # self.i += 1
+        # pass
 
         # id_real = round(np.real(id), 5)
         # id_imag = round(np.imag(id), 5)
-        #
+        
         # id_rounded = id_real + id_imag * 1j
-        #
-        # if id_rounded in self.__resolution_dict__.keys():
-        #     color = self.__resolution_dict__[id_rounded]
-        # else:
-        #     color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        #     self.__resolution_dict__[id_rounded] = color
-        #
+        
+        if id in self.__resolution_dict__.keys():
+            color = self.__resolution_dict__[id]
+        else:
+            color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            self.__resolution_dict__[id] = color
+        
         # print(id_rounded, color)
-        # # time.sleep(1)
-        #
-        # self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
-        # self.update()
+        # time.sleep(1)
+        
+        self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
+        self.update()
 
     def clear(self):
         self.__screen__.fill((255, 255, 255))
