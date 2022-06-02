@@ -81,19 +81,17 @@ class POLY():
     def __init__(self, coefficients, lowerB=-10, upperB=10, n=20):
         assert(len(coefficients) >= 1)
 
-        self.calculated = { #DP to make compute faster
-            'guess' : [],
-            'root': []
-        }
-
+        self.dict = {}
         self.lowerB = lowerB
         self.upperB = upperB
         self.n = n
         self.coefficients = coefficients
         self.derivative = np.polyder(self.coefficients, 1)
+
         start_t = time.time()         
         self.roots = self.calc_roots(lowerB, upperB, n)
         end_t = time.time() 
+
         self.time_efficiency = float(end_t - start_t)
 
     def adjust(self, new_coeff, lowerB=-10, upperB=10, n=20):
@@ -120,7 +118,10 @@ class POLY():
         self.derivative = np.polyder(self.coefficients, 1)
         self.roots = self.calc_roots(lowerB, upperB, n)
 
-    def calc_roots(self, lowerB, upperB, N, doPrint=False):
+    def round_complex(self, complex, decimal):
+        return round(np.real(complex), decimal) + round(np.imag(complex), decimal)*1j
+
+    def calc_roots(self, lowerB, upperB, N, doPrint=False, maxIter=1000):
         '''
         calc_roots: return the roots of the polynomial object
         :param lowerB: lower bound for generating inital guesses
@@ -128,60 +129,38 @@ class POLY():
         :param N: sample size, N=sqrt(num_guesses)
         :return: array of complex root values
         '''
-        maxIter = 1000
         sampleR = [np.random.uniform(lowerB, upperB) for x in range(N)]
         sampleI = [np.random.uniform(lowerB, upperB) for x in range(N)]
-
-        roots = []
 
         for r in sampleR:
             for i in sampleI:
                 guess = r + i*1j
-                alreadyFound = False
-
-                # PRE CHECK FOR ANSWER
-                for known in self.calculated.get('guess'):                                                          # check if guess if in dict
-                    if abs(guess - known) < DELTA:                                                                  # known root already calculated
-                        alreadyFound = True
-
-                        if len(roots) < 1:
-                            roots.append(next_guess)
-                        else:
-                            isIn = False
-                            for root in roots:                                                        # add to known if not already found
-                                if abs(guess - root) < DELTA:
-                                    isIn = True
-                            
-                            if isIn == False:
-                                roots.append(next_guess)                                                            # add to return if new root
-                        
-                        break
+                guesses_path = []
                 
-                # DO CALC IF NOT FOUND
-                if alreadyFound == False:
-                    original_guess = guess                                                                          # record original for lookup
-
-                    for n in range(maxIter):
+                if self.round_complex(guess, 8) in self.dict.keys():
+                    # already found root
+                    continue
+                
+                else:
+                    # root not found
+                    # do next_guess
+                    original_guess = guess
+                    for iteration in range(maxIter):
                         next_guess = guess - (self.eval(guess) / self.eval_derivative(guess))
+                        if abs(next_guess - guess) < DELTA:  
+                            # found a new root!
+                            self.dict[self.round_complex(original_guess, 8)] = self.round_complex(next_guess, 8)
 
-                        if abs(next_guess - guess) < DELTA:                                                         # found new ans
-                            self.calculated['guess'].append(original_guess)                                         # regardless, add found root and guess to dict
-                            self.calculated['root'].append(next_guess) 
-
-                            if len(roots) < 1:
-                                roots.append(next_guess) 
-                            else:
-                                isIn = False
-                                for m, root in enumerate(roots):                                                    # add to known if not already found
-                                    if abs(next_guess - root) < DELTA:
-                                        isIn = True
-                                
-                                if isIn == False:
-                                    roots.append(next_guess)                                                        # add to return if new root
+                            # add all path elements to the dictionary 
+                            for ele in guesses_path:
+                                self.dict[self.round_complex(ele, 8)] = self.round_complex(next_guess, 8)
                             break
 
-                        guess = next_guess
-        return roots
+                        # not a root this iteration
+                        guesses_path.append(next_guess)
+                        guess = next_guess    
+
+        return set(self.dict.values())            
 
     def eval(self, x):
         '''
