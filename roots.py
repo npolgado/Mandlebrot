@@ -121,7 +121,7 @@ class POLY():
                     print(f"already found root (num: {roots_found})")
                     continue
                 
-                else
+                else:
                     # root not found
                     # do next_guess
                     original_guess = guess
