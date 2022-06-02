@@ -1,5 +1,7 @@
 import pygame, time, random, os
 
+import numpy as np
+
 class Painter:
     def __init__(self, poly_roots=None):
         pygame.init()
@@ -36,14 +38,20 @@ class Painter:
         pygame.draw.line(self.__screen__, (0,0,0), (0, self.__size__/2), (self.__size__, self.__size__/2))  # horizontal line
 
     def draw_resolution(self, x, y, id):
-        # print(f"id={id}  ({x}, {y})")
 
-        if id in self.__resolution_dict__.keys():
-            color = self.__resolution_dict__[id]
+        id_real = round(np.real(id), 5)
+        id_imag = round(np.imag(id), 5)
 
+        id_rounded = id_real + id_imag * 1j
+
+        if id_rounded in self.__resolution_dict__.keys():
+            color = self.__resolution_dict__[id_rounded]
         else:
             color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            self.__resolution_dict__[id] = color
+            self.__resolution_dict__[id_rounded] = color
+
+        print(id_rounded, color)
+        # time.sleep(1)
 
         self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
 
