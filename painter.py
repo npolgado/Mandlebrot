@@ -5,8 +5,8 @@ class Painter:
     def __init__(self, poly_dict=None, showWindow=True):
         self.showWindow = showWindow
         self.i = 0
-        self.__resolution__ = 200
-        self.__scalar__ = 5
+        self.__resolution__ = 500
+        self.__scalar__ = 1000//self.__resolution__
         self.__size__ = self.__resolution__ * self.__scalar__
         self.__resolution_dict__ = {}
 
@@ -21,6 +21,8 @@ class Painter:
             self.clear()
             self.draw_skeleton()
             self.update()
+
+        pygame.mouse.set_visible(False)
 
     def handle_gui(self):
         for event in pygame.event.get():
@@ -48,6 +50,7 @@ class Painter:
         pygame.draw.line(self.__screen__, (0,0,0), (0, self.__size__/2), (self.__size__, self.__size__/2))  # horizontal line
 
     def draw_resolution(self, x, y, id):
+        pygame.event.get()
         # if (self.i % 10000 == 0):
         #     print(self.i)
         # self.i += 1
