@@ -6,7 +6,8 @@ class Painter:
         self.showWindow = showWindow
         self.i = 0
         self.__resolution__ = 1000
-        self.__scalar__ = 1000//self.__resolution__
+        screen_size = 1000
+        self.__scalar__ = screen_size//self.__resolution__
         self.__size__ = self.__resolution__ * self.__scalar__
         self.__resolution_dict__ = {}
 
