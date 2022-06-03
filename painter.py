@@ -1,28 +1,31 @@
-import pygame, time, random, os
-
+import pygame, time, random, os, sys
 import numpy as np
 
 class Painter:
-    def __init__(self, poly_dict=None):
-        pygame.init()
-
+    def __init__(self, poly_dict=None, showWindow=True):
+        self.showWindow = showWindow
         self.i = 0
-
-        pygame.display.set_caption('Fractals Babyy')
-
-        self.__resolution__ = 1000
-        self.__scalar__ = 1
+        self.__resolution__ = 200
+        self.__scalar__ = 5
         self.__size__ = self.__resolution__ * self.__scalar__
-        self.__screen__ = pygame.display.set_mode((self.__size__, self.__size__))
-
         self.__resolution_dict__ = {}
 
         if poly_dict != None:
             self.sort_dict(poly_dict)          
 
-        self.clear()
-        self.draw_skeleton()
-        self.update()
+        if self.showWindow:
+            pygame.init()
+            pygame.display.set_caption('Fractals Babyy')
+            window_flags = (pygame.RESIZABLE)
+            self.__screen__ = pygame.display.set_mode((self.__size__, self.__size__), flags=window_flags)
+            self.clear()
+            self.draw_skeleton()
+            self.update()
+
+    def handle_gui(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
 
     def sort_dict(self, poly_dict):
         # get unique roots in the previous dictionary
@@ -55,7 +58,7 @@ class Painter:
         
         # id_rounded = id_real + id_imag * 1j
         
-        if id in self.__resolution_dict__.keys():
+        if id in self.__resolution_dict__:
             color = self.__resolution_dict__[id]
         else:
             color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
@@ -63,7 +66,8 @@ class Painter:
         
         # print(id_rounded, color)
         # time.sleep(1)
-        
+
+        # self.__screen__.set_at((x*self.__scalar__, y*self.__scalar__), color)
         self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
         self.update()
 

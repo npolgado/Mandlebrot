@@ -32,10 +32,11 @@ def root_finder_helper(next_guess, poly):
     return poly.roots[index]
 
 class FRACTAL(): #use this as the dictionary, input must be a poly
-    def __init__(self, poly):
+    def __init__(self, poly, showWindow=True):
+        self.showWindow = showWindow
         self.poly = poly        
         self.dict = poly.dict
-        self.painter = p.Painter(poly.dict) #extra param not implemented
+        self.painter = p.Painter(self.dict, showWindow=self.showWindow) #extra param not implemented
 
     def find_all_roots(self, WIDTH, HEIGHT):
         '''
@@ -46,16 +47,27 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         :param HEIGHT: num points in y axis dimension
         :return: nothing, call which_root and draw for every point
         '''
-        for x in range(HEIGHT):
-            for y in range(WIDTH):
+        tot = WIDTH * HEIGHT
+        i = 0
+        w_off = WIDTH / 2
+        h_off = HEIGHT / 2
+
+        for x in list(np.linspace(-WIDTH/2, WIDTH/2, WIDTH+1)):
+            for y in list(np.linspace(-HEIGHT/2, HEIGHT/2, HEIGHT+1)):
                 position = x + y*1j
                 position_rounded = self.poly.round_complex(position, 8)
 
-                if position_rounded in self.dict.keys(): # root known... 
-                    self.painter.draw_resolution(x, y, position_rounded)
+                if position_rounded in self.dict: # root known... 
+                    root = self.dict[position_rounded]
                 else:
                     root = self.poly.round_complex(self.which_root(position), 8)
-                    self.painter.draw_resolution(x, y, root)
+                    
+                if self.showWindow:
+                    self.painter.draw_resolution(x+w_off, y+h_off, root)
+                
+                progress = round(float((i/tot)*100), 3)
+                i+=1
+                # print(f"\r|{position_rounded}|{root}|{progress}%", end='\r')
 
     def which_root(self, guess, maxIter=1000):
         '''
@@ -65,12 +77,21 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         :param y: imaginary component, or y coordinate
         :return: the root which this initial guess calculates
         '''
-        original_guess = guess
+        o_g_r = self.poly.round_complex(guess, 8)
+
+        if o_g_r in self.dict: # found in dict already
+            return self.dict[o_g_r]
 
         for iteration in range(maxIter):
             next_guess = guess - (self.poly.eval(guess) / self.poly.eval_derivative(guess))
+            n_g_r = self.poly.round_complex(next_guess, 8)
+
+            if n_g_r in self.dict: # found in dict already
+                return self.dict[n_g_r]
+
             if abs(next_guess - guess) < DELTA:  
                 # found a new root!
+                self.dict[o_g_r] = n_g_r # add new find to dict
                 return next_guess
 
             # not a root this iteration
@@ -83,9 +104,6 @@ class POLY():
         assert(len(coefficients) >= 1)
 
         self.dict = {}
-        self.lowerB = lowerB
-        self.upperB = upperB
-        self.n = n
         self.coefficients = coefficients
         self.derivative = np.polyder(self.coefficients, 1)
 
@@ -110,42 +128,50 @@ class POLY():
         sampleI = [np.random.uniform(lowerB, upperB) for x in range(N)]
 
         roots_saved = 0     # keeps track of how many times the efficiency was triggered
+
         for r in sampleR:
             for i in sampleI:
                 guess = r + i*1j
+                guess_rounded = self.round_complex(guess, 8)
                 guesses_path = []
 
                 # print(f"\n{self.round_complex(guess, 8)} \n {self.dict.keys()} \n")
                 # time.sleep(1)
 
-                if self.round_complex(guess, 8) in self.dict.keys():
+                if guess_rounded in self.dict:
                     # already found root
                     roots_saved += 1
                     print(f"already found root (num: {roots_saved})")
                     continue
-                
                 else:
                     # root not found
                     # do next_guess
                     original_guess = guess
-                    # guesses_path.append(guess)
+                    original_guess_r = self.round_complex(original_guess, 8)
+
+                    guesses_path.append(original_guess_r)
 
                     for iteration in range(maxIter):
                         next_guess = guess - (self.eval(guess) / self.eval_derivative(guess))
+                        next_guess_r = self.round_complex(next_guess, 8)
+                        guesses_path.append(next_guess_r)
+                        
+                        if next_guess_r in self.dict:
+                            break
+
                         if abs(next_guess - guess) < DELTA:  
                             # found a new root!
-                            self.dict[self.round_complex(original_guess, 8)] = self.round_complex(next_guess, 8)
-
+                            self.dict[original_guess_r] = next_guess_r
+ 
                             # add all path elements to the dictionary 
                             for ele in guesses_path:
-                                self.dict[self.round_complex(ele, 8)] = self.round_complex(next_guess, 8)
+                                self.dict[ele] = next_guess_r
                             break
 
                         # not a root this iteration
-                        guesses_path.append(next_guess)
                         guess = next_guess    
 
-        print(f"optimized {roots_saved} roots")
+        # print(f"optimized {roots_saved} roots")
         return list(set(self.dict.values()))            
 
     def eval(self, x):

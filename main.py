@@ -2,11 +2,12 @@
 NEWTON'S FRACTAL
 
 Using roots.py, create a live animation which shows "newton's fractal"
-REF 1 - https://youtu.be/-RdOwhmqP5s
+REF 1 - INSPIRATION : https://youtu.be/-RdOwhmqP5s
+REF 2 - HORNER'S METHOD: https://en.wikipedia.org/wiki/Horner%27s_method
 
 
 TODO:
-    - fix handing window when doing anything on comp (ERIC)
+    - fix handing window when doing anything on comp (ERIC) (https://stackoverflow.com/questions/10354638/pygame-draw-single-pixel)
     - add roots to plot (ERIC)
     - add axis to plot (ERIC)
     - change scaling to be seperate for WIDTH and HEIGHT (diff window sizes) (BOTH)
@@ -54,36 +55,56 @@ def plot_complex(roots): #TODO: make this plot the axis for more details
     plt.grid(True)
     plt.show()
 
+def window_mainloop(fr):
+    start_t = time.time()
+    isDone = False
+    while True:
+        fr.painter.handle_gui()
+        if not isDone:
+            try:
+                fr.find_all_roots(fr.painter.get_resolution(), fr.painter.get_resolution())
+                isDone = True
+            except Exception as e:
+                print(f"error finding all roots: \n\t{e}")
+
+        cur_t = time.strftime("%b %d %Y %H:%M:%S", time.gmtime(time.time()))
+        print(f"\r|{cur_t}|", end='\r')
+
 if __name__ == "__main__":
     if len(sys.argv) > 1: 
         # has args
         args = [int(x) for x in sys.argv[1:]]
-        print("finding roots to polynomial {}...".format(args))
         
         try:
-            f = r.POLY(args, lowerB=-500, upperB=500, n=20)
-            print(f"\tloaded polynomial in {f.time_efficiency} seconds")
-            print(f"\nFOUND ROOTS \n{f.roots}\n")
-            # print(f"\tFOUND ROOTS \n{f.dict.values()}\n")
+            f = r.POLY(args, lowerB=-100, upperB=100, n=25)
+            print(f"--- SUCESS ---\nloaded polynomial {f.get_name()}\tin {f.time_efficiency} seconds")
+            print(f"root -->\n\t{f.roots}")
         except Exception as e:
             print(f"ERROR loading polynomial: \n\t{e}")
 
         # try:
+        #     print(f"PLOTTING {f.get_name()}...")
         #     plot_complex(f.roots)
         # except Exception as e:
         #     print(f"ERROR printing roots: \n\t{e}")
 
         try:
-            fr = r.FRACTAL(f)
+            fr = r.FRACTAL(f, showWindow=True)
         except Exception as e:
             print(f"couldn't find which root that is: \n\t{e}")
 
+        # try:
+        #     fr.find_all_roots(fr.painter.get_resolution(), fr.painter.get_resolution())
+        #     print("found all roots!!")
+        # except Exception as e:
+        #     print(f"error with all roots: {e}\n\t")
         try:
-            fr.find_all_roots(fr.painter.get_resolution(), fr.painter.get_resolution())
-            print("found all roots!!")
+            window_mainloop(fr)
         except Exception as e:
-            print(f"error with all roots: {e}\n\t")
+            print(f"ERROR running mainloop: \n\t{e}")
     else:
         print(f"couldn't load initial polynomial arguments, try running main.py with parameters # # # # # (# = number, USE SPACES")
         pass
-    time.sleep(30)
+
+    
+    # time.sleep(30)

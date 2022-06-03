@@ -32,7 +32,7 @@ def plot_runtimes(x, y):
 
 if __name__ == "__main__":
     max_degrees = 10
-    max_samples = 10
+    max_samples = 5
 
     total = max_degrees * max_samples
     count = 0
