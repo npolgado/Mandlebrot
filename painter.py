@@ -5,7 +5,7 @@ class Painter:
     def __init__(self, poly_dict=None, showWindow=True):
         self.showWindow = showWindow
         self.i = 0
-        self.__resolution__ = 500
+        self.__resolution__ = 1000
         self.__scalar__ = 1000//self.__resolution__
         self.__size__ = self.__resolution__ * self.__scalar__
         self.__resolution_dict__ = {}
@@ -22,7 +22,7 @@ class Painter:
             self.draw_skeleton()
             self.update()
 
-        pygame.mouse.set_visible(False)
+        # pygame.mouse.set_visible(False)
 
     def handle_gui(self):
         for event in pygame.event.get():
