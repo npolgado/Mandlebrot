@@ -109,22 +109,27 @@ class POLY():
         sampleR = [np.random.uniform(lowerB, upperB) for x in range(N)]
         sampleI = [np.random.uniform(lowerB, upperB) for x in range(N)]
 
-        roots_found = 0     # keeps track of how many times the efficiency was triggered
+        roots_saved = 0     # keeps track of how many times the efficiency was triggered
         for r in sampleR:
             for i in sampleI:
                 guess = r + i*1j
                 guesses_path = []
-                
+
+                # print(f"\n{self.round_complex(guess, 8)} \n {self.dict.keys()} \n")
+                # time.sleep(1)
+
                 if self.round_complex(guess, 8) in self.dict.keys():
                     # already found root
-                    roots_found += 1
-                    print(f"already found root (num: {roots_found})")
+                    roots_saved += 1
+                    print(f"already found root (num: {roots_saved})")
                     continue
                 
                 else:
                     # root not found
                     # do next_guess
                     original_guess = guess
+                    # guesses_path.append(guess)
+
                     for iteration in range(maxIter):
                         next_guess = guess - (self.eval(guess) / self.eval_derivative(guess))
                         if abs(next_guess - guess) < DELTA:  
@@ -140,6 +145,7 @@ class POLY():
                         guesses_path.append(next_guess)
                         guess = next_guess    
 
+        print(f"optimized {roots_saved} roots")
         return list(set(self.dict.values()))            
 
     def eval(self, x):
