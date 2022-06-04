@@ -31,7 +31,7 @@ def plot_runtimes(x, y):
     plt.show()
 
 if __name__ == "__main__":
-    max_degrees = 10
+    max_degrees = 40
     max_samples = 5
 
     total = max_degrees * max_samples
@@ -48,5 +48,5 @@ if __name__ == "__main__":
             print_bar(count, total)
             times.append(poly.time_efficiency)
         means.append(np.average(times))
-    plot_runtimes(np.linspace(2, max_degrees+2, max_degrees), means)
+    plot_runtimes(np.linspace(2, (max_degrees+2), (max_degrees)), means)
     print(means)

@@ -56,7 +56,6 @@ def plot_complex(roots): #TODO: make this plot the axis for more details
     plt.show()
 
 def window_mainloop(fr):
-    start_t = time.time()
     isDone = False
     while True:
         fr.painter.handle_gui()
@@ -73,10 +72,10 @@ def window_mainloop(fr):
 if __name__ == "__main__":
     if len(sys.argv) > 1: 
         # has args
-        args = [int(x) for x in sys.argv[1:]]
+        args = [float(x) for x in sys.argv[1:]]
         
         try:
-            f = r.POLY(args, lowerB=-100, upperB=100, n=25)
+            f = r.POLY(args, lowerB=-500, upperB=500, n=50)
             print(f"--- SUCESS ---\nloaded polynomial {f.get_name()}\tin {f.time_efficiency} seconds")
             print(f"root -->\n\t{f.roots}")
         except Exception as e:
@@ -93,15 +92,11 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"couldn't find which root that is: \n\t{e}")
 
-        # try:
-        #     fr.find_all_roots(fr.painter.get_resolution(), fr.painter.get_resolution())
-        #     print("found all roots!!")
-        # except Exception as e:
-        #     print(f"error with all roots: {e}\n\t")
         try:
             window_mainloop(fr)
         except Exception as e:
             print(f"ERROR running mainloop: \n\t{e}")
+
     else:
         print(f"couldn't load initial polynomial arguments, try running main.py with parameters # # # # # (# = number, USE SPACES")
         pass
