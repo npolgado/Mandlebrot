@@ -1,15 +1,27 @@
 import pygame, time, random, os, sys
 import numpy as np
 
+# best polynomials:
+# 1 8 2 8 1 0 (x**5 + x)
+#
+
+# TODO: improve color.
+#  have a few different color schemes (ie. green) that come packaged with 10 colors that are randomly assigned
+
+
 class Painter:
     def __init__(self, poly_dict=None, showWindow=True):
         self.showWindow = showWindow
         self.i = 0
         self.__resolution__ = 1000
-        screen_size = 1000
-        self.__scalar__ = screen_size//self.__resolution__
+        self.__scalar__ = 1     # NICK TODO: comment how users should work with these two variables
+
         self.__size__ = self.__resolution__ * self.__scalar__
         self.__resolution_dict__ = {}
+
+        self.fractal_colors_used = []
+        self.colors_used = 0
+        self.__init_color_array__()
 
         if poly_dict != None:
             self.sort_dict(poly_dict)          
@@ -51,29 +63,35 @@ class Painter:
         pygame.draw.line(self.__screen__, (0,0,0), (0, self.__size__/2), (self.__size__, self.__size__/2))  # horizontal line
 
     def draw_resolution(self, x, y, id):
-        pygame.event.get()
-        # if (self.i % 10000 == 0):
-        #     print(self.i)
-        # self.i += 1
-        # pass
-
-        # id_real = round(np.real(id), 5)
-        # id_imag = round(np.imag(id), 5)
-        
-        # id_rounded = id_real + id_imag * 1j
+        pygame.event.get()  # prevents 'pygame not responding' when click or keyboard
         
         if id in self.__resolution_dict__:
+            print("A")
             color = self.__resolution_dict__[id]
         else:
-            color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            print("B")
+            color = __get_color__()
             self.__resolution_dict__[id] = color
-        
-        # print(id_rounded, color)
-        # time.sleep(1)
 
         # self.__screen__.set_at((x*self.__scalar__, y*self.__scalar__), color)
         self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
         self.update()
+
+    def __init_color_array__(self, seed=1):
+        print("ayo")
+        if seed == 1:
+            self.fractal_colors_used = [(0, 255, 255), (8, 143, 143), (125, 249, 255), (80, 200, 120), (34, 139, 34),
+                                        (53, 94, 59), (0, 163, 108), (144, 238, 144), (50, 205, 50), (71, 135, 120),
+                                        (64, 224, 208), (0, 128, 128), (64, 130, 109)]
+
+        random.shuffle(self.fractal_colors_used)
+
+    def __get_color__(self):
+        ans = self.fractal_colors_used[self.colors_used]
+        self.colors_used += 1
+        print(f"color={ans}, num={self.colors_used}")
+        return ans
+
 
     def clear(self):
         self.__screen__.fill((255, 255, 255))
