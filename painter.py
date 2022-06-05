@@ -66,7 +66,10 @@ class Painter:
 
     def draw_resolution(self, x, y, id):
         pygame.event.get()  # prevents 'pygame not responding' when click or keyboard
-        color = self.__resolution_dict__[id]
+        if id in self.__resolution_dict__:
+            color = self.__resolution_dict__[id]
+        else:
+            color = self.fractal_colors_used[np.random.randint(0, len(self.fractal_colors_used)-1)]
         self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
         self.update()
 
@@ -83,7 +86,6 @@ class Painter:
         self.colors_used += 1
         print(f"color={ans}, num={self.colors_used}")
         return ans
-
 
     def clear(self):
         self.__screen__.fill((255, 255, 255))
