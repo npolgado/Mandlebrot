@@ -63,11 +63,12 @@ def window_mainloop(fr):
             try:
                 fr.find_all_roots(fr.painter.get_resolution(), fr.painter.get_resolution())
                 isDone = True
+                print("\r                   ", end='\r')
             except Exception as e:
                 print(f"error finding all roots: \n\t{e}")
 
         cur_t = time.strftime("%b %d %Y %H:%M:%S", time.gmtime(time.time()))
-        print(f"\r|{cur_t}|", end='\r')
+        print(f"\r |{isDone}| |{cur_t}|", end='\r')
 
 if __name__ == "__main__":
     if len(sys.argv) > 1: 
@@ -75,7 +76,7 @@ if __name__ == "__main__":
         args = [float(x) for x in sys.argv[1:]]
         
         try:
-            f = r.POLY(args, lowerB=-2, upperB=2, n=50)
+            f = r.POLY(args, lowerB=-2, upperB=2, n=0)
             print(f"--- SUCESS ---\nloaded polynomial {f.get_name()}\tin {f.time_efficiency} seconds")
             print(f"root -->\n\t{f.roots}")
         except Exception as e:
@@ -88,7 +89,7 @@ if __name__ == "__main__":
         #     print(f"ERROR printing roots: \n\t{e}")
 
         try:
-            fr = r.FRACTAL(f, showWindow=True)
+            fr = r.FRACTAL(f, showWindow=False)
         except Exception as e:
             print(f"couldn't find which root that is: \n\t{e}")
 

@@ -14,6 +14,19 @@ QUICK NOTES:
   recalculating poly, and changing the oo func
 '''
 
+def print_bar(progress, total):
+    '''
+    print_bar: uses total and progress to determine progress in percentage
+
+    :param progress: current progress (less than total)
+    :param total: total amount of iterations
+
+    :return: None (plots graph)
+    '''
+    percent = 100 * (progress / float(total))
+    bar = '*' * int(percent) + '-' * (100-int(percent))
+    print(f"\r|{bar}| {percent:.2f}%", end='\r')
+
 def root_finder_helper(next_guess, poly):
     '''
     root_finder_helper: find the nearest root in the case that a root in never found
@@ -58,7 +71,7 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
             for y in list(np.linspace(-HEIGHT/2, HEIGHT/2, HEIGHT+1)):
                 r = x * Wscale
                 i = y * Hscale
-                position = r + i*1j
+                position = r + (i*1j)
                 position_rounded = self.poly.round_complex(position, 3)
 
                 root = self.poly.round_complex(self.which_root(position), 3)
@@ -68,8 +81,7 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
                 
                 count+=1
                 progress = round(float((count/tot)*100), 3)
-                
-                print(f"\r{progress}%|{position_rounded}|{root}", end='\r')
+                print_bar(count, tot)
 
     def which_root(self, guess, maxIter=1000):
         '''
@@ -84,25 +96,47 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         if o_g_r in self.dict: # found in dict already
             return self.dict[o_g_r]
 
+        path = []
+        path.append(o_g_r)
+
         for iteration in range(maxIter):
+
+            if iteration > (2*int(len(self.poly.coefficients)+1)): 
+                # print("\rrunoffcase\r")
+                break # CASE: ran past expect iterations -> root
+
             next_guess = guess - (self.poly.eval(guess) / self.poly.eval_derivative(guess))
             n_g_r = self.poly.round_complex(next_guess, 3)
 
             if n_g_r in self.dict: # found in dict already
                 return self.dict[n_g_r]
 
-            if abs(next_guess - guess) < DELTA:
-                self.dict[o_g_r] = n_g_r # add new find to dict
-                return next_guess
+            if abs(next_guess - guess) < DELTA: # newly calculated root
+                # print("\rCALC!\r")
+                for ele in path:
+                    self.dict[ele] = n_g_r      # add path to dict (has original guess ... last guess)
+                return next_guess               # return actual guess for painting
 
-            # not a root this iteration
+            # not a root this iteration...
+            path.append(n_g_r)
             guess = next_guess    
+        
+        #didn't find a root for this point...
+        next_guess = root_finder_helper(next_guess, self.poly)
+        for ele in path:
+            self.dict[ele] = next_guess
 
-        return root_finder_helper(next_guess, self.poly)
+        return next_guess
 
 class POLY():
-    def __init__(self, coefficients, lowerB=-10, upperB=10, n=20):
+    def __init__(self, coefficients, lowerB=-10, upperB=10, n=20):    
         assert(len(coefficients) >= 1)
+        if n == 0:
+            n = int(len(coefficients)*1.5)+10
+
+        self.total_n = int(n*n)
+        self.roots_hashed = 0
+        self.roots_calculated = 0
 
         self.dict = {}
         self.coefficients = coefficients
@@ -112,6 +146,8 @@ class POLY():
         self.roots = self.calc_roots(lowerB, upperB, n)
         end_t = time.time() 
 
+        self.percent_hashed = float((self.roots_hashed / self.total_n) * 100)
+        self.percent_calculated = float((self.roots_calculated / self.total_n) * 100)
         self.time_efficiency = float(end_t - start_t)
 
     def round_complex(self, complex, decimal):
@@ -136,19 +172,20 @@ class POLY():
         sampleR = [np.random.uniform(-2, 2) for x in range(N)]
         sampleI = [np.random.uniform(-2, 2) for x in range(N)]
 
-        roots_saved = 0     # keeps track of how many times the efficiency was triggered
-        num_iterations = []
-        num_maxed_out = 0
+        # roots_saved = 0     # keeps track of how many times the efficiency was triggered
+        # num_iterations = []
+        # num_maxed_out = 0
 
         for r in sampleR:
             for i in sampleI:
-                guess = r + i*1j
+                guess = r + (i*1j)
                 guess_rounded = self.round_complex(guess, 3)
                 guesses_path = []
 
                 if guess_rounded in self.dict:
                     # already found root
-                    roots_saved += 1
+                    self.roots_hashed += 1
+                    # roots_saved += 1
                     # print(f"already found root (num: {roots_saved})")
                     continue
                 else:
@@ -161,8 +198,10 @@ class POLY():
 
                     isFound = False
                     for iteration in range(maxIter):
-                        if iteration > (2*int(len(self.coefficients)-1)):
-                            break
+
+                        if iteration > (2*int(len(self.coefficients)+1)): 
+                            break # CASE: ran past expect iterations -> root
+
                         f_x = self.eval(guess)
                         f_p_x = self.eval_derivative(guess)
                         next_guess = guess - (f_x / f_p_x)
@@ -170,9 +209,10 @@ class POLY():
                         next_guess_r = self.round_complex(next_guess, 3)
 
                         if next_guess_r in self.dict:
-                            roots_saved += 1
-                            num_iterations.append(iteration)
-                            isFound = True
+                            self.roots_hashed += 1
+                            # roots_saved += 1
+                            # num_iterations.append(iteration)
+                            # isFound = True
                             # print(f"already found root (num: {roots_saved})")
                             break
 
@@ -181,24 +221,27 @@ class POLY():
                         if abs(next_guess - guess) < DELTA:  
                             # found a new root!
                             self.dict[original_guess_r] = next_guess_r
-                            num_iterations.append(iteration)
-                            isFound = True
+                            self.roots_calculated += 1
+                            # num_iterations.append(iteration)
+                            # isFound = True
 
                             # add all path elements to the dictionary 
                             for ele in guesses_path:
+                                self.roots_calculated += 1
                                 self.dict[ele] = next_guess_r
                             break
 
                         # not a root this iteration
                         guess = next_guess 
-                    if not isFound:
-                        num_maxed_out += 1
-                    num_iterations.append(iteration)
-        avg_iter = np.average(num_iterations)
-        self.average_iterations = avg_iter
-        self.didnt_converge = num_maxed_out 
+        #             if not isFound:
+        #                 num_maxed_out += 1
+        #             num_iterations.append(iteration)
+        # avg_iter = np.average(num_iterations)
+        # self.average_iterations = avg_iter
+        # self.didnt_converge = num_maxed_out 
 
         # print(f"optimized {roots_saved} roots")
+        # self.known_roots = roots_saved
         return list(set(self.dict.values()))            
 
     def eval(self, x):

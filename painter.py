@@ -39,9 +39,10 @@ class Painter:
         # pygame.mouse.set_visible(False)
 
     def handle_gui(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                exit()
+        if self.showWindow:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
 
     def map_color(self, poly_dict):
         # get unique roots in the previous dictionary
@@ -66,10 +67,13 @@ class Painter:
 
     def draw_resolution(self, x, y, id):
         pygame.event.get()  # prevents 'pygame not responding' when click or keyboard
+
         if id in self.__resolution_dict__:
             color = self.__resolution_dict__[id]
         else:
-            color = self.fractal_colors_used[np.random.randint(0, len(self.fractal_colors_used)-1)]
+            color = self.fractal_colors_used[np.random.randint(0, len(self.fractal_colors_used)-1)] #choose a random color NOTE: will never reach
+
+
         self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
         self.update()
 
