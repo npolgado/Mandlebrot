@@ -62,8 +62,10 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
                 position_rounded = self.poly.round_complex(position, 3)
 
                 if position_rounded in self.dict: # root known... 
+                    # print("\rknown!\r")
                     root = self.dict[position_rounded]
                 else:
+                    # print("\runknown!\r")
                     root = self.poly.round_complex(self.which_root(position), 3)
                     
                 if self.showWindow:
@@ -140,6 +142,8 @@ class POLY():
         sampleI = [np.random.uniform(lowerB, upperB) for x in range(N)]
 
         roots_saved = 0     # keeps track of how many times the efficiency was triggered
+        num_iterations = []
+        num_maxed_out = 0
 
         for r in sampleR:
             for i in sampleI:
@@ -152,7 +156,7 @@ class POLY():
 
                 if guess_rounded in self.dict:
                     # already found root
-                    # roots_saved += 1
+                    roots_saved += 1
                     # print(f"already found root (num: {roots_saved})")
                     continue
                 else:
@@ -163,12 +167,17 @@ class POLY():
 
                     guesses_path.append(original_guess_r)
 
+                    isFound = False
                     for iteration in range(maxIter):
+                        if iteration > (2*int(len(self.coefficients)-1)):
+                            break
                         next_guess = guess - (self.eval(guess) / self.eval_derivative(guess))
                         next_guess_r = self.round_complex(next_guess, 3)
 
                         if next_guess_r in self.dict:
-                            # roots_saved += 1
+                            roots_saved += 1
+                            num_iterations.append(iteration)
+                            isFound = True
                             # print(f"already found root (num: {roots_saved})")
                             break
 
@@ -177,14 +186,22 @@ class POLY():
                         if abs(next_guess - guess) < DELTA:  
                             # found a new root!
                             self.dict[original_guess_r] = next_guess_r
- 
+                            num_iterations.append(iteration)
+                            isFound = True
+
                             # add all path elements to the dictionary 
                             for ele in guesses_path:
                                 self.dict[ele] = next_guess_r
                             break
 
                         # not a root this iteration
-                        guess = next_guess    
+                        guess = next_guess 
+                    if not isFound:
+                        num_maxed_out += 1
+                    num_iterations.append(iteration)
+        avg_iter = np.average(num_iterations)
+        self.average_iterations = avg_iter
+        self.didnt_converge = num_maxed_out 
 
         # print(f"optimized {roots_saved} roots")
         return list(set(self.dict.values()))            

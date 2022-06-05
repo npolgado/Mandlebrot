@@ -75,7 +75,7 @@ if __name__ == "__main__":
         args = [float(x) for x in sys.argv[1:]]
         
         try:
-            f = r.POLY(args, lowerB=-500, upperB=500, n=50)
+            f = r.POLY(args, lowerB=-2, upperB=2, n=50)
             print(f"--- SUCESS ---\nloaded polynomial {f.get_name()}\tin {f.time_efficiency} seconds")
             print(f"root -->\n\t{f.roots}")
         except Exception as e:
