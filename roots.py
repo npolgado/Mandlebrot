@@ -48,13 +48,17 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         :return: nothing, call which_root and draw for every point
         '''
         tot = WIDTH * HEIGHT
-        i = 0
+        Wscale  = 4 / WIDTH # for 1000, this is 0.002 or the factor to adjust root calculations by
+        Hscale  = 4 / HEIGHT # for 1000, this is 0.002 or the factor to adjust root calculations by
+        count = 0
         w_off = WIDTH / 2
         h_off = HEIGHT / 2
 
         for x in list(np.linspace(-WIDTH/2, WIDTH/2, WIDTH+1)):
             for y in list(np.linspace(-HEIGHT/2, HEIGHT/2, HEIGHT+1)):
-                position = x + y*1j
+                r = x * Wscale
+                i = y * Hscale
+                position = r + i*1j
                 position_rounded = self.poly.round_complex(position, 3)
 
                 if position_rounded in self.dict: # root known... 
@@ -65,9 +69,10 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
                 if self.showWindow:
                     self.painter.draw_resolution(x+w_off, y+h_off, root)
                 
-                progress = round(float((i/tot)*100), 3)
-                i+=1
-                # print(f"\r|{position_rounded}|{root}|{progress}%", end='\r')
+                count+=1
+                progress = round(float((count/tot)*100), 3)
+                
+                print(f"\r|{position_rounded}|{root}|{progress}%", end='\r')
 
     def which_root(self, guess, maxIter=1000):
         '''

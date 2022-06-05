@@ -70,7 +70,7 @@ class Painter:
             color = self.__resolution_dict__[id]
         else:
             print("B")
-            color = __get_color__()
+            color = self.__get_color__()
             self.__resolution_dict__[id] = color
 
         # self.__screen__.set_at((x*self.__scalar__, y*self.__scalar__), color)
