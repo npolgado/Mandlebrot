@@ -74,7 +74,7 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
                 count+=1
                 progress = round(float((count/tot)*100), 3)
                 
-                print(f"\r|{position_rounded}|{root}|{progress}%", end='\r')
+                print(f"\r{progress}%|{position_rounded}|{root}", end='\r')
 
     def which_root(self, guess, maxIter=1000):
         '''

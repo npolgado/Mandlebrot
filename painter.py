@@ -24,7 +24,7 @@ class Painter:
         self.__init_color_array__()
 
         if poly_dict != None:
-            self.sort_dict(poly_dict)          
+            self.map_color(poly_dict)
 
         if self.showWindow:
             pygame.init()
@@ -42,14 +42,15 @@ class Painter:
             if event.type == pygame.QUIT:
                 exit()
 
-    def sort_dict(self, poly_dict):
+    def map_color(self, poly_dict):
         # get unique roots in the previous dictionary
         roots = list(set(poly_dict.values())) 
         
         # map each root to a unique color
         color_map = []
         for root in roots:
-            color_map.append((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+            col = self.__get_color__()
+            color_map.append(col)
         
         for guess in poly_dict.keys():
             root = poly_dict[guess]
@@ -64,29 +65,19 @@ class Painter:
 
     def draw_resolution(self, x, y, id):
         pygame.event.get()  # prevents 'pygame not responding' when click or keyboard
-        
-        if id in self.__resolution_dict__:
-            print("A")
-            color = self.__resolution_dict__[id]
-        else:
-            print("B")
-            color = self.__get_color__()
-            self.__resolution_dict__[id] = color
-
-        # self.__screen__.set_at((x*self.__scalar__, y*self.__scalar__), color)
+        color = self.__resolution_dict__[id]
         self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
         self.update()
 
     def __init_color_array__(self, seed=1):
-        print("ayo")
-        if seed == 1:
+        if seed == 1:   # green theme
             self.fractal_colors_used = [(0, 255, 255), (8, 143, 143), (125, 249, 255), (80, 200, 120), (34, 139, 34),
                                         (53, 94, 59), (0, 163, 108), (144, 238, 144), (50, 205, 50), (71, 135, 120),
                                         (64, 224, 208), (0, 128, 128), (64, 130, 109)]
 
         random.shuffle(self.fractal_colors_used)
 
-    def __get_color__(self):
+    def __get_color__(self):    # uses init_color_array and picks the next one that hasn't been used
         ans = self.fractal_colors_used[self.colors_used]
         self.colors_used += 1
         print(f"color={ans}, num={self.colors_used}")
