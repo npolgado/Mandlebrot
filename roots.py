@@ -61,12 +61,7 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
                 position = r + i*1j
                 position_rounded = self.poly.round_complex(position, 3)
 
-                if position_rounded in self.dict: # root known... 
-                    # print("\rknown!\r")
-                    root = self.dict[position_rounded]
-                else:
-                    # print("\runknown!\r")
-                    root = self.poly.round_complex(self.which_root(position), 3)
+                root = self.poly.round_complex(self.which_root(position), 3)
                     
                 if self.showWindow:
                     self.painter.draw_resolution(x+w_off, y+h_off, root)
@@ -96,8 +91,7 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
             if n_g_r in self.dict: # found in dict already
                 return self.dict[n_g_r]
 
-            if abs(next_guess - guess) < DELTA:  
-                # found a new root!
+            if abs(next_guess - guess) < DELTA:
                 self.dict[o_g_r] = n_g_r # add new find to dict
                 return next_guess
 
@@ -128,6 +122,7 @@ class POLY():
         im_r = round(im, decimal)
 
         ans = re_r + im_r*1j
+        # print(f"{re} + {im}*1j = {ans}")
         return ans
 
     def calc_roots(self, lowerB, upperB, N, maxIter=1000):
@@ -138,8 +133,8 @@ class POLY():
         :param N: sample size, N=sqrt(num_guesses)
         :return: array of complex root values
         '''
-        sampleR = [np.random.uniform(lowerB, upperB) for x in range(N)]
-        sampleI = [np.random.uniform(lowerB, upperB) for x in range(N)]
+        sampleR = [np.random.uniform(-2, 2) for x in range(N)]
+        sampleI = [np.random.uniform(-2, 2) for x in range(N)]
 
         roots_saved = 0     # keeps track of how many times the efficiency was triggered
         num_iterations = []
@@ -150,9 +145,6 @@ class POLY():
                 guess = r + i*1j
                 guess_rounded = self.round_complex(guess, 3)
                 guesses_path = []
-
-                # print(f"\n{self.round_complex(guess, 8)} \n {self.dict.keys()} \n")
-                # time.sleep(1)
 
                 if guess_rounded in self.dict:
                     # already found root
@@ -171,7 +163,10 @@ class POLY():
                     for iteration in range(maxIter):
                         if iteration > (2*int(len(self.coefficients)-1)):
                             break
-                        next_guess = guess - (self.eval(guess) / self.eval_derivative(guess))
+                        f_x = self.eval(guess)
+                        f_p_x = self.eval_derivative(guess)
+                        next_guess = guess - (f_x / f_p_x)
+                        # print(f"{guess} - ({f_x} / {f_p_x}) = {next_guess}")
                         next_guess_r = self.round_complex(next_guess, 3)
 
                         if next_guess_r in self.dict:

@@ -3,6 +3,7 @@ import numpy as np
 
 # best polynomials:
 # 1 8 2 8 1 0 (x**5 + x)
+# 1 2 3 4 5 6 7 8 9 10 11 12
 #
 
 # TODO: improve color.
