@@ -96,14 +96,14 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         if o_g_r in self.dict: # found in dict already
             return self.dict[o_g_r]
 
-        path = []
-        path.append(o_g_r)
+        # path = []
+        # path.append(o_g_r)
 
         for iteration in range(maxIter):
 
-            if iteration > (2*int(len(self.poly.coefficients)+1)): 
-                # print("\rrunoffcase\r")
-                break # CASE: ran past expect iterations -> root
+            # if iteration > (2*int(len(self.poly.coefficients)+1)): 
+            #     # print("\rrunoffcase\r")
+            #     break # CASE: ran past expect iterations -> root
 
             next_guess = guess - (self.poly.eval(guess) / self.poly.eval_derivative(guess))
             n_g_r = self.poly.round_complex(next_guess, 3)
@@ -113,18 +113,18 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
 
             if abs(next_guess - guess) < DELTA: # newly calculated root
                 # print("\rCALC!\r")
-                for ele in path:
-                    self.dict[ele] = n_g_r      # add path to dict (has original guess ... last guess)
+                # for ele in path:
+                #     self.dict[ele] = n_g_r      # add path to dict (has original guess ... last guess)
                 return next_guess               # return actual guess for painting
 
             # not a root this iteration...
-            path.append(n_g_r)
+            # path.append(n_g_r)
             guess = next_guess    
         
         #didn't find a root for this point...
         next_guess = root_finder_helper(next_guess, self.poly)
-        for ele in path:
-            self.dict[ele] = next_guess
+        # for ele in path:
+        #     self.dict[ele] = next_guess
 
         return next_guess
 
