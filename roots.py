@@ -133,9 +133,9 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
                 if self.showWindow:
                     self.painter.draw_resolution(x+w_off, y+h_off, root)
                 
-                count+=1
-                progress = round(float((count/tot)*100), 3)
-                print_bar(count, tot)
+                # count+=1
+                # progress = round(float((count/tot)*100), 3)
+                # print_bar(count, tot)
 
     def which_root(self, guess, maxIter=1000):
         '''
