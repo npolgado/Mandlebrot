@@ -5,14 +5,9 @@ import painter as p
 import time
 
 SIZE = 1024         # size of canvas
-DELTA = 1e-4       # when to stop calculating root
-
-'''
-QUICK NOTES:
-
-- how do we handle changing the roots,
-  recalculating poly, and changing the oo func
-'''
+DELTA = 1e-4        # when to stop calculating root
+XBOUNDS = 4         # used to calculate the scaling factor for points on find_all_roots
+YBOUNDS = 4         # used to calculate the scaling factor for points on find_all_roots
 
 def print_bar(progress, total):
     '''
@@ -44,6 +39,62 @@ def root_finder_helper(next_guess, poly):
             index = i
     return poly.roots[index]
 
+class COMPLEX():
+    def __init__(self, real, imaginary):
+        self.re = float(real)
+        self.im = float(imaginary)
+    
+    def real(self):
+        return self.re
+
+    def imag(self):
+        return self.im
+
+    def subtract(self, number):
+        if type(number) == COMPLEX: # number is complex
+            re = self.real() - number.real()
+            im = self.imag() - number.imag()
+            return COMPLEX(re, im)
+        else:
+            re = self.real() - number
+            im = self.imag() - number
+            return COMPLEX(re, im)
+    
+    def add(self, number):
+        if type(number) == COMPLEX: # number is complex
+            re = self.real() + number.real()
+            im = self.imag() + number.imag()
+            return COMPLEX(re, im)
+        else:
+            re = self.real() + number
+            im = self.imag() + number
+            return COMPLEX(re, im)
+
+    def divide(self, number):
+        if type(number) == COMPLEX: # number is complex
+            ac = self.real() * number.real()
+            ad = self.real() * number.imag()
+            bd = self.imag() * number.imag()
+            bc = self.imag() * number.real()
+            den = (number.real()**2 + number.imag()**2)
+            tmp = (ac+bd)/den
+            tmp2 = (bc-ad)/den
+            return COMPLEX(tmp, tmp2)
+        else:
+            return COMPLEX((self.real()/number), self.imag()/number) # number is magnitude
+
+    def multiply(self, number):
+        if type(number) == COMPLEX: # number is complex
+            ac = self.real() * number.real()
+            ad = self.real() * number.imag()
+            bd = self.imag() * number.imag()
+            bc = self.imag() * number.real()
+            tmp = (ac - bd)
+            tmp2 = (ad + bc)
+            return COMPLEX(tmp, tmp2)
+        else:
+            return COMPLEX((self.real()*number), self.imag()*number) # number is magnitude
+
 class FRACTAL(): #use this as the dictionary, input must be a poly
     def __init__(self, poly, showWindow=True):
         self.showWindow = showWindow
@@ -61,9 +112,11 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         :return: nothing, call which_root and draw for every point
         '''
         tot = WIDTH * HEIGHT
-        Wscale  = 4 / WIDTH # for 1000, this is 0.002 or the factor to adjust root calculations by
-        Hscale  = 4 / HEIGHT # for 1000, this is 0.002 or the factor to adjust root calculations by
         count = 0
+
+        Wscale = XBOUNDS / WIDTH # for 1000, this is 0.002 or the factor to adjust root calculations by
+        Hscale = YBOUNDS / HEIGHT # for 1000, this is 0.002 or the factor to adjust root calculations by
+       
         w_off = WIDTH / 2
         h_off = HEIGHT / 2
 
@@ -71,8 +124,9 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
             for y in list(np.linspace(-HEIGHT/2, HEIGHT/2, HEIGHT+1)):
                 r = x * Wscale
                 i = y * Hscale
+                # position = COMPLEX(r, j)
                 position = r + (i*1j)
-                position_rounded = self.poly.round_complex(position, 3)
+                # position_rounded = self.poly.round_complex(position, 3)
 
                 root = self.poly.round_complex(self.which_root(position), 3)
                     
@@ -96,49 +150,35 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         if o_g_r in self.dict: # found in dict already
             return self.dict[o_g_r]
 
-        # path = []
-        # path.append(o_g_r)
-
         for iteration in range(maxIter):
+            
+            f_x = self.poly.eval(self.poly.coefficients, guess)
+            fp_x = self.poly.eval(self.poly.derivative, guess)
 
-            # if iteration > (2*int(len(self.poly.coefficients)+1)): 
-            #     # print("\rrunoffcase\r")
-            #     break # CASE: ran past expect iterations -> root
+            next_guess = guess - (f_x / fp_x)
+            n_guess_r = self.poly.round_complex(next_guess, 3)
 
-            next_guess = guess - (self.poly.eval(guess) / self.poly.eval_derivative(guess))
-            n_g_r = self.poly.round_complex(next_guess, 3)
-
-            if n_g_r in self.dict: # found in dict already
-                return self.dict[n_g_r]
+            if n_guess_r in self.dict: # found in dict already
+                return self.dict[n_guess_r]
 
             if abs(next_guess - guess) < DELTA: # newly calculated root
-                # print("\rCALC!\r")
-                # for ele in path:
-                #     self.dict[ele] = n_g_r      # add path to dict (has original guess ... last guess)
                 return next_guess               # return actual guess for painting
 
-            # not a root this iteration...
-            # path.append(n_g_r)
             guess = next_guess    
-        
-        #didn't find a root for this point...
-        next_guess = root_finder_helper(next_guess, self.poly)
-        # for ele in path:
-        #     self.dict[ele] = next_guess
 
-        return next_guess
+        return root_finder_helper(next_guess, self.poly)
 
 class POLY():
-    def __init__(self, coefficients, lowerB=-10, upperB=10, n=20):    
+    def __init__(self, coefficients, lowerB=-2, upperB=2, n=10):    
         assert(len(coefficients) >= 1)
         if n == 0:
-            n = int(len(coefficients)*1.5)+10
+            n = int(len(coefficients)*1.5)+10 # scaled to polynomial length
 
-        self.total_n = int(n*n)
-        self.roots_hashed = 0
-        self.roots_calculated = 0
+        self.total_n = int(n*n) # will run through 'n' real *  'n' imag samples
+        self.roots_hashed = 0 # number of times a sample was in the dictionary already
+        self.roots_calculated = 0 # number of times the sample was calculated through iteration
 
-        self.dict = {}
+        self.dict = {}  # init lookup dict
         self.coefficients = coefficients
         self.derivative = list(np.polyder(self.coefficients, 1))
 
@@ -150,11 +190,11 @@ class POLY():
         self.percent_calculated = float((self.roots_calculated / self.total_n) * 100)
         self.time_efficiency = float(end_t - start_t)
 
-    def round_complex(self, complex, decimal):
-        re = float(complex.real)
+    def round_complex(self, number, decimal):
+        re = float(number.real)
         re_r = round(re, decimal)
 
-        im = float(complex.imag)
+        im = float(number.imag)
         im_r = round(im, decimal)
 
         ans = re_r + im_r*1j
@@ -169,8 +209,8 @@ class POLY():
         :param N: sample size, N=sqrt(num_guesses)
         :return: array of complex root values
         '''
-        sampleR = [np.random.uniform(-2, 2) for x in range(N)]
-        sampleI = [np.random.uniform(-2, 2) for x in range(N)]
+        sampleR = [np.random.uniform(lowerB, upperB) for x in range(N)]
+        sampleI = [np.random.uniform(lowerB, upperB) for x in range(N)]
 
         # roots_saved = 0     # keeps track of how many times the efficiency was triggered
         # num_iterations = []
@@ -178,9 +218,8 @@ class POLY():
 
         for r in sampleR:
             for i in sampleI:
-                guess = r + (i*1j)
+                guess = r + i*1j
                 guess_rounded = self.round_complex(guess, 3)
-                guesses_path = []
 
                 if guess_rounded in self.dict:
                     # already found root
@@ -194,18 +233,19 @@ class POLY():
                     original_guess = guess
                     original_guess_r = self.round_complex(original_guess, 3)
 
+                    guesses_path = []
                     guesses_path.append(original_guess_r)
 
                     isFound = False
                     for iteration in range(maxIter):
 
-                        if iteration > (2*int(len(self.coefficients)+1)): 
-                            break # CASE: ran past expect iterations -> root
+                        # if iteration > (2*int(len(self.coefficients)+1)): 
+                        #     break # CASE: ran past expect iterations -> root
 
-                        f_x = self.eval(guess)
-                        f_p_x = self.eval_derivative(guess)
+                        f_x = self.eval(self.coefficients, guess)
+                        f_p_x = self.eval(self.derivative, guess)
+
                         next_guess = guess - (f_x / f_p_x)
-                        # print(f"{guess} - ({f_x} / {f_p_x}) = {next_guess}")
                         next_guess_r = self.round_complex(next_guess, 3)
 
                         if next_guess_r in self.dict:
@@ -220,14 +260,13 @@ class POLY():
 
                         if abs(next_guess - guess) < DELTA:  
                             # found a new root!
-                            self.dict[original_guess_r] = next_guess_r
-                            self.roots_calculated += 1
+                            # self.dict[original_guess_r] = next_guess_r
+                            self.roots_calculated += int(len(guesses_path))
                             # num_iterations.append(iteration)
                             # isFound = True
 
                             # add all path elements to the dictionary 
                             for ele in guesses_path:
-                                self.roots_calculated += 1
                                 self.dict[ele] = next_guess_r
                             break
 
@@ -244,39 +283,16 @@ class POLY():
         # self.known_roots = roots_saved
         return list(set(self.dict.values()))            
 
-    def eval(self, x):
+    def eval(self, lst, x):
         '''
         eval: to find the value of the polynomial with value x
         :param x: value to evaluate polynomial
         :return: polynomial evaluated with x
         '''
         p=0
-        for i in self.coefficients:
+        for i in lst:
             p = p*x+i
-        return p
-        # ans = 0
-        # count = 0
-        # for i in reversed(self.coefficients):
-        #     ans += i*np.power(x, count)
-        #     count += 1
-        # return ans
-
-    def eval_derivative(self, x):
-        '''
-        eval_derivative: to find the value of the derivative with value x
-        :param x: value to evaluate polynomial
-        :return: derivative evaluated with x
-        '''
-        p=0
-        for i in self.derivative:
-            p = p*x+i
-        return p
-        # ans = 0
-        # count = 0
-        # for i in reversed(self.derivative):
-        #     ans += i*np.power(x, count)
-        #     count += 1
-        # return ans    
+        return p   
 
     def get_name(self):
         '''

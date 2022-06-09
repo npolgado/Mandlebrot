@@ -58,12 +58,14 @@ def plot_complex(roots): #TODO: make this plot the axis for more details
 def window_mainloop(fr):
     isDone = False
     while True:
+
         fr.painter.handle_gui()
+
         if not isDone:
             try:
                 fr.find_all_roots(fr.painter.get_resolution(), fr.painter.get_resolution())
                 isDone = True
-                print("\r                   ", end='\r')
+                # print("\r                   ", end='\r')
             except Exception as e:
                 print(f"error finding all roots: \n\t{e}")
 
@@ -89,7 +91,7 @@ if __name__ == "__main__":
         #     print(f"ERROR printing roots: \n\t{e}")
 
         try:
-            fr = r.FRACTAL(f, showWindow=False)
+            fr = r.FRACTAL(f, showWindow=True)
         except Exception as e:
             print(f"couldn't find which root that is: \n\t{e}")
 

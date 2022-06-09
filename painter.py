@@ -74,6 +74,8 @@ class Painter:
             color = self.fractal_colors_used[np.random.randint(0, len(self.fractal_colors_used)-1)] #choose a random color NOTE: will never reach
 
 
+        # self.__screen__.set_at() # might be good to test over .fill
+        # self.__screen__.blits() # this is also another idea, bliting multiple rectangles after they get calcd.
         self.__screen__.fill(color, ((x*self.__scalar__,y*self.__scalar__), (self.__scalar__, self.__scalar__)))
         self.update()
 
