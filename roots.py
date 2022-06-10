@@ -166,13 +166,13 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
 
             guess = next_guess    
 
-        return root_finder_helper(next_guess, self.poly)
+        return root_finder_helper(o_g_r, self.poly)
 
 class POLY():
     def __init__(self, coefficients, lowerB=-2, upperB=2, n=10):    
         assert(len(coefficients) >= 1)
         if n == 0:
-            n = int(len(coefficients)*1.5)+10 # scaled to polynomial length
+            n = int(len(coefficients)*10) # scaled to polynomial length
 
         self.total_n = int(n*n) # will run through 'n' real *  'n' imag samples
         self.roots_hashed = 0 # number of times a sample was in the dictionary already
@@ -215,9 +215,13 @@ class POLY():
         # roots_saved = 0     # keeps track of how many times the efficiency was triggered
         # num_iterations = []
         # num_maxed_out = 0
+        roots = []
 
         for r in sampleR:
             for i in sampleI:
+                if len(roots) >= len(self.coefficients):
+                    break
+
                 guess = r + i*1j
                 guess_rounded = self.round_complex(guess, 3)
 
@@ -262,6 +266,7 @@ class POLY():
                             # found a new root!
                             # self.dict[original_guess_r] = next_guess_r
                             self.roots_calculated += int(len(guesses_path))
+                            roots.append(next_guess)
                             # num_iterations.append(iteration)
                             # isFound = True
 
