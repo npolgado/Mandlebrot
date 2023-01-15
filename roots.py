@@ -114,18 +114,20 @@ class FRACTAL(): #use this as the dictionary, input must be a poly
         tot = WIDTH * HEIGHT
         count = 0
 
-        Wscale = XBOUNDS / WIDTH # for 1000, this is 0.002 or the factor to adjust root calculations by
-        Hscale = YBOUNDS / HEIGHT # for 1000, this is 0.002 or the factor to adjust root calculations by
+        # Wscale = XBOUNDS / WIDTH # for 1000, this is 0.002 or the factor to adjust root calculations by
+        # Hscale = YBOUNDS / HEIGHT # for 1000, this is 0.002 or the factor to adjust root calculations by
        
         w_off = WIDTH / 2
         h_off = HEIGHT / 2
 
-        for x in list(np.linspace(-WIDTH/2, WIDTH/2, WIDTH+1)):
-            for y in list(np.linspace(-HEIGHT/2, HEIGHT/2, HEIGHT+1)):
-                r = x * Wscale
-                i = y * Hscale
+        for x in np.linspace(-WIDTH/2, WIDTH/2, WIDTH+1):
+            for y in np.linspace(-HEIGHT/2, HEIGHT/2, HEIGHT+1):
+                # r = x * Wscale
+                # i = y * Hscale
                 # position = COMPLEX(r, j)
-                position = r + (i*1j)
+                # position = r + (i*1j)
+                position = x + (y*1j)
+
                 # position_rounded = self.poly.round_complex(position, 3)
 
                 root = self.poly.round_complex(self.which_root(position), 3)
